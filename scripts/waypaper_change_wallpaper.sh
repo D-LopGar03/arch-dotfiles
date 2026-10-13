@@ -1,17 +1,60 @@
-#!/bin/zsh
+#!/bin/bash
 
-# This script is executed by crontab every 5 minutes
-# */5 * * * * /home/ay4t0/.config/scripts/waybar_change_wallpaper.sh
+BASE_DIR="$HOME/.config/wallpapers"
 
+# Selección de carpeta
+DIR=$(find "$BASE_DIR" -mindepth 1 -maxdepth 1 -type d | sed "s|$BASE_DIR/||" | rofi -dmenu -p "📂 Carpeta")
+[ -z "$DIR" ] && exit 0
 
-# Carpeta donde tienes tus fondos de pantalla
-wallpaper_dir="$HOME/.config/wallpapers/pixel-arts/"
+# Construir lista de imágenes con opción de volver
+IMAGES=$(find "$BASE_DIR/$DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.gif" \))
 
-# Seleccionar un archivo de imagen aleatorio de la carpeta (incluye más extensiones)
-wallpaper=$(find "$wallpaper_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.bmp" -o -iname "*.gif" -o -iname "*.webp" \) | shuf -n 1)
+CHOICE=$(
+  (
+    echo "🔙 Volver"
+    for img in $IMAGES; do
+      echo -en "$(basename "$img")\0icon\x1f$img\n"
+    done
+  ) | rofi -dmenu \
+    -show-icons \
+    -theme-str '
+* {
+  font: "Hack Nerd Font 12";
+}
+window {
+  width: 75%;
+  background-color: #1e1e2e;
+  padding: 20px;
+}
+listview {
+  lines: 4;
+  columns: 4;
+  spacing: 15px;
+}
+element {
+  padding: 10px;
+  border-radius: 12px;
+}
+element-icon {
+  size: 180px;
+}
+'
+)
 
-# Cambiar el fondo con Waypaper
-swww img "$wallpaper" --transition-duration=0 && wal -i "$wallpaper" && killall waybar && waybar &
+# Nada elegido → salir
+[ -z "$CHOICE" ] && exit 0
 
-sleep 5
+# Si eligió volver → relanzar
+if [[ "$CHOICE" == "🔙 Volver" ]]; then
+  exec "$0"
+fi
 
+# Recuperar la ruta completa a partir del nombre
+IMG=$(find "$BASE_DIR/$DIR" -type f -iname "$CHOICE" | head -n1)
+
+# Verificación
+[ -z "$IMG" ] && exit 1
+
+# Aplicar fondo
+awww img "$IMG" --transition-type grow --transition-duration 2 --filter Nearest --resize stretch
+wal -n -s -i "$IMG"

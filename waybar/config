@@ -19,30 +19,35 @@
         "network",
         "tray",
         "pulseaudio",
+        "backlight",
         "custom/notification"
     ],
     "custom/launcher": {
         "format": "",
         "tooltip": false,
-        "on-click": "/home/ay4t0/.config/scripts/./rofi.sh"
+        "on-click": "/home/ay4t0/.config/scripts/./waypaper_change_wallpaper.sh"
     },
     "hyprland/workspaces": {
         "format": "{icon}",
         "on-click": "activate",
-        "format-icons": {
-            "1": "<span color='#6fa8dc'></span>",
-            "2": "<span color='#6fa8dc'></span>",
-            "3": "<span color='#6fa8dc'></span>",
-            "4": "<span color='#6fa8dc'></span>",
-            "5": "<span color='#6fa8dc'></span>",
-            "6": "<span color='#6fa8dc'></span>",
-            "7": "<span color='#6fa8dc'></span>",
-            "8": "<span color='#6fa8dc'></span>",
-            "9": "<span color='#6fa8dc'></span>",
-            "10": "<span color='#6fa8dc'></span>",
-            "active": "<span color='#f1c232'>󰮯 </span>"
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
         },
-        "sort-by-number": true
+        "format-icons": {
+            "1": "<span color='#ff0000'></span>",
+            "2": "<span color='#ffa500'></span>",
+            "3": "<span color='#00ffff'></span>",
+            "4": "<span color='#ff69b4'></span>",
+            "5": "<span color='#ff0000'></span>",
+            "active": "<span color='#ffff00'>󰮯 </span>",
+            "default": "<span color='#666666'> </span>",
+        },
+        "sort-by-number": true,
+        "all-outputs": true
     },
     "battery": {
         "states": {
@@ -90,9 +95,21 @@
         "on-click-right": "sleep 0.1 && swaync-client -d -sw",
         "escape": true
     },
+    
+    "backlight": {
+    
+    "device": "intel_backlight", // Opcional: especifica la GPU si no detecta el brillo autom\u00e1ticamente
+    "format": "{icon} {percent}%",
+    "format-icons": ["󰃞", "󰃟", "󰃠"], // Iconos de Nerd Fonts (baja, media, alta)
+    "on-scroll-up": "brightnessctl set 10%+",
+    "on-scroll-down": "brightnessctl set 10%-",
+    "min-length": 6
+      
+  },
+
     "clock": {
         "format": "{:%H:%M}  ",
-        "format-alt": "{:%A, %B %d, %Y (%R)}  ",
+        "format-alt": "{:%A, %B %d, %Y (%R)} 󰸘 ",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode": "month",
@@ -144,7 +161,7 @@
         "tooltip-format": "{ifname} via {gwaddr} ",
         "format-linked": "{ifname} (No IP) ",
         "format-disconnected": "󰤫",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}",
+        "format-alt": "{essid}",
         "format-icons": {
             "default": [
                 "<span color='#fe3702'>󰤟 </span>",
@@ -155,13 +172,13 @@
         }
     },
     "memory": {
-        "interval": 1,
-        "format": "    {used} GiB  ",
-        "max-length": 30
+        "interval": 5,
+        "format": " {used} GiB",
+        "max-length": 10
     },
     "cpu": {
-        "interval": 1,
-        "format": "    {usage}%",
-        "max-length": 30
+        "interval": 5,
+        "format": " {usage}%",
+        "max-length": 10
     }
 }

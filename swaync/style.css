@@ -1,0 +1,575 @@
+/* ─────────────────────────────────────────
+   RAINBOW SEMANTIC — SWAYNC STYLE (CATPPUCCIN + PYWAL)
+   Fondo: Catppuccin Macchiato | Letras: Azul claro
+───────────────────────────────────────── */
+
+/* Importación de variables dinámicas de Pywal para los bordes y acentos */
+@import url("../../.cache/wal/colors-waybar.css");
+
+:root {
+  /* Dimensiones y bordes originales */
+  --radius:    14px;
+  --radius-sm: 8px;
+
+  --notification-icon-size:       56px;
+  --notification-app-icon-size:   20px;
+  --notification-group-icon-size: 28px;
+
+  --mpris-album-art-icon-size: 88px;
+  
+  /* Colores fijos solicitados por el usuario */
+  --custom-bg:     rgb(15, 15, 28);   /* Macchiato Crust */
+  --custom-text:   rgb(230, 69, 83); /* Late Maroon */
+
+  /* Asignación de bloques de la interfaz */
+  --cc-bg:         var(--custom-bg);
+  --noti-bg:       var(--custom-bg);
+  --noti-bg-hover: rgba(255, 255, 255, 0.05);
+  --noti-bg-focus: rgba(255, 255, 255, 0.03);
+  --noti-border:   rgba(255, 255, 255, 0.07);
+
+  --mpris-album-art-overlay: rgba(30, 32, 48, 0.65);
+  --mpris-button-hover:      rgba(255, 255, 255, 0.1);
+}
+
+/* ─────────────────────────────────────────
+   FONDO
+───────────────────────────────────────── */
+.blank-window { background: transparent; }
+.floating-notifications { background: transparent; }
+
+/* ─────────────────────────────────────────
+   NOTIFICACIONES FLOTANTES — BASE
+───────────────────────────────────────── */
+.floating-notifications .notification-row .notification-background {
+  padding: 6px 10px;
+}
+
+.floating-notifications .notification-row .notification-background .notification {
+  background: var(--noti-bg);
+  border: 1px solid @color4; 
+  border-radius: var(--radius);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+  padding: 0;
+}
+
+/* low = música → morado (@color5) */
+.floating-notifications .notification-row .notification-background .notification.low {
+  border-color: @color5; 
+  background: var(--custom-bg);
+}
+
+/* normal = azul (@color4) */
+.floating-notifications .notification-row .notification-background .notification.normal {
+  border-color: @color4;
+  background: var(--custom-bg);
+}
+
+/* critical = rojo (@color1) */
+.floating-notifications .notification-row .notification-background .notification.critical {
+  border-color: @color1;
+  background: var(--custom-bg);
+}
+
+.floating-notifications .notification-row .notification-background .notification .notification-default-action {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  color: var(--custom-text); 
+  transition: background 0.15s ease-in-out;
+}
+
+.floating-notifications .notification-row .notification-background .notification .notification-default-action:hover {
+  background: var(--noti-bg-hover);
+}
+
+/* Ícono */
+.floating-notifications .notification-row .notification-background .notification .notification-default-action .notification-content .image {
+  border-radius: 100px;
+  border: 2px solid @color5; 
+  margin: 4px;
+  -gtk-icon-size: var(--notification-icon-size);
+}
+
+.floating-notifications .notification-row .notification-background .notification.low
+  .notification-default-action .notification-content .image {
+  border-color: @color5;
+}
+
+.floating-notifications .notification-row .notification-background .notification.critical
+  .notification-default-action .notification-content .image {
+  border-color: @color1;
+}
+
+/* Títulos por urgencia (Mantiene el color de letra personalizado) */
+.floating-notifications .notification-row .notification-background .notification
+  .notification-default-action .notification-content .text-box .summary {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--custom-text);
+  text-shadow: none;
+}
+
+.floating-notifications .notification-row .notification-background .notification.low
+  .notification-default-action .notification-content .text-box .summary {
+  color: var(--custom-text);
+}
+
+.floating-notifications .notification-row .notification-background .notification.critical
+  .notification-default-action .notification-content .text-box .summary {
+  color: @color1; /* Mantiene alerta roja para críticas */
+}
+
+.floating-notifications .notification-row .notification-background .notification
+  .notification-default-action .notification-content .text-box .body {
+  font-size: 13px;
+  color: var(--custom-text);
+  text-shadow: none;
+}
+
+.floating-notifications .notification-row .notification-background .notification
+  .notification-default-action .notification-content .text-box .time {
+  font-size: 11px;
+  color: var(--custom-text);
+  opacity: 0.7;
+}
+
+/* Botón cerrar flotante */
+.floating-notifications .close-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: @color1;
+  border: none;
+  border-radius: 100%;
+  min-width: 22px;
+  min-height: 22px;
+  margin: 8px 8px 0 0;
+  padding: 0;
+}
+
+.floating-notifications .close-button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transition: background 0.15s ease-in-out;
+}
+
+/* ─────────────────────────────────────────
+   CONTROL CENTER
+───────────────────────────────────────── */
+.control-center {
+  background: var(--cc-bg);
+  color: var(--custom-text);
+  border-radius: 0;
+  border-right: 1px solid @color5;
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.6);
+}
+
+.control-center .control-center-list-placeholder {
+  opacity: 0.5;
+  font-size: 13px;
+  color: var(--custom-text);
+}
+
+.control-center .control-center-list {
+  background: transparent;
+}
+
+.control-center .control-center-list .notification {
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────
+   NOTIFICACIONES EN CONTROL CENTER
+───────────────────────────────────────── */
+.notification-row {
+  background: none;
+  outline: none;
+}
+
+.notification-row:focus {
+  background: var(--noti-bg-focus);
+}
+
+.notification-row .notification-background {
+  padding: 4px 10px;
+}
+
+.notification-row .notification-background .notification {
+  background: rgba(255, 255, 255, 0.00);
+  border: 1px solid var(--noti-border);
+  border-radius: var(--radius);
+  padding: 0;
+  transition: background 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.notification-row .notification-background .notification:hover {
+  border-color: @color4;
+}
+
+.notification-row .notification-background .notification.low {
+  border-color: @color5;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.notification-row .notification-background .notification.low:hover {
+  border-color: @color5;
+}
+
+.notification-row .notification-background .notification.critical {
+  border-color: @color1;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.notification-row .notification-background .notification.critical:hover {
+  border-color: @color1;
+}
+
+.notification-row .notification-background .notification .notification-default-action {
+  padding: 10px 12px;
+  margin: 0;
+  background: transparent;
+  border: none;
+  color: var(--custom-text);
+  border-radius: var(--radius);
+  transition: background 0.15s ease-in-out;
+}
+
+.notification-row .notification-background .notification .notification-default-action:hover {
+  background: var(--noti-bg-hover);
+}
+
+.notification-row .notification-background .notification .notification-default-action:not(:only-child) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.notification-row .notification-background .notification .notification-default-action .notification-content {
+  background: transparent;
+  border-radius: var(--radius);
+  padding: 0;
+}
+
+.notification-row .notification-background .notification .notification-default-action .notification-content .image {
+  -gtk-icon-filter: none;
+  -gtk-icon-size: var(--notification-icon-size);
+  border-radius: 100px;
+  border: 1px solid @color4;
+  margin: 4px;
+}
+
+.notification-row .notification-background .notification.low
+  .notification-default-action .notification-content .image {
+  border-color: @color5;
+}
+
+.notification-row .notification-background .notification.critical
+  .notification-default-action .notification-content .image {
+  border-color: @color1;
+}
+
+.notification-row .notification-background .notification .notification-default-action .notification-content .app-icon {
+  -gtk-icon-size: var(--notification-app-icon-size);
+  margin: 6px;
+}
+
+.notification-row .notification-background .notification .notification-default-action .notification-content .text-box label {
+  filter: none;
+}
+
+.notification-row .notification-background .notification .notification-default-action .notification-content .text-box .summary {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--custom-text);
+  background: transparent;
+  text-shadow: none;
+}
+
+.notification-row .notification-background .notification.low
+  .notification-default-action .notification-content .text-box .summary {
+  color: var(--custom-text);
+}
+
+.notification-row .notification-background .notification.critical
+  .notification-default-action .notification-content .text-box .summary {
+  color: @color1;
+}
+
+.notification-row .notification-background .notification .notification-default-action .notification-content .text-box .time {
+  font-size: 11px;
+  color: var(--custom-text);
+  background: transparent;
+  text-shadow: none;
+  margin-right: 28px;
+  opacity: 0.7;
+}
+
+.notification-row .notification-background .notification .notification-default-action .notification-content .text-box .body {
+  font-size: 13px;
+  color: var(--custom-text);
+  background: transparent;
+  text-shadow: none;
+  opacity: 0.9;
+}
+
+/* Progreso */
+.notification-row .notification-background .notification .notification-default-action .notification-content progressbar trough {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  min-height: 3px;
+}
+
+.notification-row .notification-background .notification .notification-default-action .notification-content progressbar progress {
+  background: @color4;
+  border-radius: 4px;
+}
+
+.notification-row .notification-background .notification.low
+  .notification-default-action .notification-content progressbar progress {
+  background: @color5;
+}
+
+.notification-row .notification-background .notification.critical
+.notification-default-action .notification-content progressbar progress {
+background: @color1;
+}
+/* Inline reply */
+.notification-row .notification-background .notification .notification-default-action .notification-content .inline-reply {
+margin-top: 6px;
+}
+.notification-row .notification-background .notification .notification-default-action .notification-content .inline-reply .inline-reply-entry {
+background: rgba(255, 255, 255, 0.05);
+color: var(--custom-text);
+caret-color: @color4;
+border: 1px solid var(--noti-border);
+border-radius: var(--radius-sm);
+}
+.notification-row .notification-background .notification .notification-default-action .notification-content .inline-reply .inline-reply-button {
+margin-left: 4px;
+background: rgba(255, 255, 255, 0.05);
+border: 1px solid @color4;
+border-radius: var(--radius-sm);
+color: @color4;
+}
+.notification-row .notification-background .notification .notification-default-action .notification-content .inline-reply .inline-reply-button:disabled {
+background: transparent;
+color: @color8;
+border-color: transparent;
+}
+.notification-row .notification-background .notification .notification-default-action .notification-content .inline-reply .inline-reply-button:hover {
+background: rgba(255, 255, 255, 0.15);
+}
+/* Acciones alt */
+.notification-row .notification-background .notification .notification-alt-actions {
+background: none;
+border-bottom-left-radius: var(--radius);
+border-bottom-right-radius: var(--radius);
+padding: 4px;
+}
+.notification-row .notification-background .notification .notification-action {
+margin: 4px;
+padding: 0;
+}
+.notification-row .notification-background .notification .notification-action > button {
+border-radius: var(--radius-sm);
+color: var(--custom-text);
+font-size: 13px;
+border: 1px solid var(--noti-border);
+background: transparent;
+transition: background 0.15s ease-in-out;
+opacity: 0.8;
+}
+.notification-row .notification-background .notification .notification-action > button:hover {
+background: var(--noti-bg-hover);
+color: var(--custom-text);
+opacity: 1;
+}
+/* Botón cerrar */
+.close-button {
+background: rgba(255, 255, 255, 0.08);
+color: @color1;
+text-shadow: none;
+padding: 0;
+border-radius: 100%;
+margin-top: 8px;
+margin-right: 8px;
+box-shadow: none;
+border: none;
+min-width: 22px;
+min-height: 22px;
+}
+.close-button:hover {
+background: rgba(255, 255, 255, 0.18);
+transition: background 0.15s ease-in-out;
+}
+/* ─────────────────────────────────────────
+GRUPOS
+───────────────────────────────────────── */
+.notification-group {
+transition: opacity 200ms ease-in-out;
+}
+.notification-group:focus {
+background: var(--noti-bg-focus);
+}
+.notification-group .notification-group-close-button .close-button {
+margin: 10px 18px;
+}
+.notification-group .notification-group-buttons,
+.notification-group .notification-group-headers {
+margin: 0 14px;
+color: var(--custom-text);
+font-size: 12px;
+opacity: 0.8;
+}
+.notification-group .notification-group-headers .notification-group-icon {
+color: @color4;
+-gtk-icon-size: var(--notification-group-icon-size);
+}
+.notification-group .notification-group-headers .notification-group-header {
+color: var(--custom-text);
+}
+.notification-group.collapsed.not-expanded {
+opacity: 0.35;
+}
+.notification-group.collapsed .notification-row .notification {
+background-color: var(--custom-bg);
+}
+.notification-group.collapsed .notification-row:not(:last-child) .notification-action,
+.notification-group.collapsed .notification-row:not(:last-child) .notification-default-action {
+opacity: 0;
+}
+.notification-group.collapsed:hover .notification-row:not(:only-child) .notification {
+background-color: var(--noti-bg-hover);
+}
+/* ─────────────────────────────────────────
+WIDGET — TITLE
+───────────────────────────────────────── */
+.widget-title {
+margin: 0;
+padding: 14px 16px 10px;
+border-bottom: 1px solid var(--noti-border);
+}
+.widget-title > label {
+font-size: 11px;
+font-weight: bold;
+letter-spacing: 0.1em;
+color: var(--custom-text);
+}
+.widget-title > button {
+font-size: 12px;
+border-radius: var(--radius-sm);
+color: @color1;
+background: rgba(255, 255, 255, 0.05);
+border: 1px solid @color1;
+padding: 4px 10px;
+}
+.widget-title > button:hover {
+background: rgba(255, 255, 255, 0.15);
+}
+/* ─────────────────────────────────────────
+WIDGET — INHIBITORS
+───────────────────────────────────────── */
+.widget-inhibitors > label {
+font-size: 11px;
+font-weight: bold;
+letter-spacing: 0.1em;
+color: var(--custom-text);
+margin: 12px 16px 6px;
+}
+.widget-inhibitors > button {
+font-size: 12px;
+margin: 4px 16px 8px;
+border-radius: var(--radius-sm);
+color: @color3;
+background: rgba(255, 255, 255, 0.05);
+border: 1px solid @color3;
+padding: 4px 10px;
+}
+.widget-inhibitors > button:hover {
+background: rgba(255, 255, 255, 0.15);
+}
+/* ─────────────────────────────────────────
+WIDGET — DND
+───────────────────────────────────────── */
+.widget-dnd {
+padding: 8px 16px;
+border-bottom: 1px solid var(--noti-border);
+}
+.widget-dnd label {
+color: var(--custom-text);
+font-size: 13px;
+}
+.widget-dnd switch {
+border-radius: 100px;
+background: rgba(255, 255, 255, 0.08);
+border: 1px solid var(--noti-border);
+}
+.widget-dnd switch:checked {
+background: @color4;
+}
+.widget-dnd switch slider {
+border-radius: 100px;
+background: var(--custom-bg);
+min-width: 18px;
+min-height: 18px;
+}
+/* ─────────────────────────────────────────
+WIDGET — MPRIS
+───────────────────────────────────────── */
+.widget-mpris {
+margin: 10px 8px;
+}
+.widget-mpris .widget-mpris-player {
+margin: 8px;
+border-radius: var(--radius);
+border: 1px solid @color5;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+.widget-mpris .widget-mpris-player .mpris-background {
+filter: blur(14px);
+}
+.widget-mpris .widget-mpris-player .mpris-overlay {
+padding: 14px;
+background-color: var(--mpris-album-art-overlay);
+}
+.widget-mpris .widget-mpris-player .mpris-overlay button {
+color: var(--custom-text);
+border: none;
+background: transparent;
+border-radius: 100%;
+padding: 6px;
+}
+.widget-mpris .widget-mpris-player .mpris-overlay button:hover {
+background: var(--mpris-button-hover);
+}
+.widget-mpris .widget-mpris-player .mpris-overlay .widget-mpris-album-art {
+border-radius: var(--radius-sm);
+border: 2px solid @color5;
+box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+/* --- TÍTULO DE LA CANCIÓN --- */
+.widget-mpris .widget-mpris-player .mpris-overlay .widget-mpris-title {
+font-weight: bold;
+font-size: 1.15rem;
+color: var(--custom-text);
+}
+/* --- NOMBRE DEL ARTISTA --- /
+.widget-mpris .widget-mpris-player .mpris-overlay .widget-mpris-subtitle label {
+font-weight: normal;
+font-size: 1.05rem; / Ajustado de 1.95rem para evitar desbordamientos */
+color: var(--custom-text);
+opacity: 0.8;
+margin-top: 4px;
+}
+/* --- BOTONES AUXILIARES DEL CAROUSEL --- */
+.widget-mpris > box > button {
+color: @color5;
+background: transparent;
+border: none;
+border-radius: 100%;
+padding: 6px;
+}
+.widget-mpris > box > button:disabled {
+color: @color8;
+}
+.widget-mpris > box > button:hover {
+background: var(--mpris-button-hover);
+}

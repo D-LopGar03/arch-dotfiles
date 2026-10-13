@@ -1,34 +1,39 @@
 #!/usr/bin/env python3
 import subprocess
-import shutil
-import os
+import time 
 
-CSS_NORMAL = "/home/ay4t0/.config/waybar/styles/style_no_music.css"
-CSS_MUSICA = "/home/ay4t0/.config/waybar/styles/style_music.css"
-CSS_DESTINO = "/home/ay4t0/.config/waybar/style.css"
-
-# Iniciar la escucha del estado de playerctl
 process = subprocess.Popen(["playerctl", "--follow", "status"], stdout=subprocess.PIPE, text=True)
-
-# Inicializar el estado
 ultimo_estado = None
 
 for estado in process.stdout:
     estado = estado.strip()
-
     if estado == "Playing":
         if ultimo_estado != "musica":
-            shutil.copy(CSS_MUSICA, CSS_DESTINO)
-            os.system('pkill -SIGUSR2 waybar')
             ultimo_estado = "musica"
+        
+        time.sleep(0.3)
+        titulo  = subprocess.run(["playerctl", "metadata", "title"],      capture_output=True, text=True).stdout.strip()
+        artista = subprocess.run(["playerctl", "metadata", "artist"],     capture_output=True, text=True).stdout.strip()
+        cover   = subprocess.run(["playerctl", "metadata", "mpris:artUrl"], capture_output=True, text=True).stdout.strip()
 
-        # Obtener y notificar título y artista
-        titulo = subprocess.run(["playerctl", "metadata", "title"], capture_output=True, text=True).stdout.strip()
-        artista = subprocess.run(["playerctl", "metadata", "artist"], capture_output=True, text=True).stdout.strip()
-        os.system(f'notify-send -h int:transient:1 "{titulo} - {artista}"')
+        summary = "Now Playing"
+        body    = f"<b>{titulo}</b>\n{artista}"
 
-    elif estado == "Paused" or estado == "Stopped":
+        cmd = [
+            "notify-send",
+            "-t", "6500",
+            "-u", "low",
+            "-i", "media-playback-start",
+            "-h", "int:transient:1",
+        ]
+
+        # Agrega la portada solo si existe
+        if cover:
+            cmd += ["-h", f"string:image-path:{cover}"]
+
+        cmd += [summary, body]
+        subprocess.run(cmd)
+
+    elif estado in ("Paused", "Stopped"):
         if ultimo_estado != "normal":
-            shutil.copy(CSS_NORMAL, CSS_DESTINO)
-            os.system('pkill -SIGUSR2 waybar')
             ultimo_estado = "normal"
