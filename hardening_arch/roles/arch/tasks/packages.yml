@@ -5,13 +5,6 @@
     state: present
   become: yes  # Requiere root
 
-- name: Instalar paquetes de AUR usando yay
-  kewlfft.aur.aur:
-    name: "{{ aur_packages }}"
-    state: present
-    user: "{{ entorno_usuario }}" # yay no debe correr como root
-  become: no
-
 - name: Asegurar que el repositorio Flathub está configurado
   community.general.flatpak_remote:
     name: flathub
