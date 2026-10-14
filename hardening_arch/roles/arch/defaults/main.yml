@@ -115,8 +115,9 @@ pacman_packages:
   - brightnessctl
   - digikam
   - imagemagick
-  - poppler    
+  - poppler
   - gimp
+  - zsh
   - cava
   - ranger
   - gtk3
