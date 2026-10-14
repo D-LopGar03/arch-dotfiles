@@ -1,16 +1,19 @@
 ---
-
-- name: Asegurar que el directorio .config existe
+- name: Asegurar que el directorio .config existe para el usuario
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.config"
+    path: "{{ entorno_home }}/.config"
     state: directory
     mode: '0755'
+    owner: "{{ entorno_usuario }}"
+    group: "{{ entorno_usuario }}"
 
 - name: Crear enlaces simbólicos de los dotfiles en .config
   ansible.builtin.file:
-    src: "{{ dotfiles_repo_dir }}/{{ item }}"
-    dest: "{{ ansible_env.HOME }}/.config/{{ item }}"
+    src: "{{ playbook_dir }}/../{{ item }}"
+    dest: "{{ entorno_home }}/.config/{{ item }}"
     state: link
-    force: yes # 'yes' reemplaza enlaces viejos o carpetas vacías si es necesario
+    force: yes
+    owner: "{{ entorno_usuario }}"
+    group: "{{ entorno_usuario }}"
   loop: "{{ dotfiles_config_links }}"
 

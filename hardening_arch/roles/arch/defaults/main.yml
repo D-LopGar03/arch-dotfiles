@@ -74,7 +74,12 @@ flatpak_browsers:
 # Usuario 
 #========================================
 
-entorno_usuario: "ay4t0"
+# Detecta automáticamente al usuario real que ejecuta el script, sin importar su nombre
+entorno_usuario: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+
+# El HOME también debe ser dinámico basándose en ese usuario
+entorno_home: "/home/{{ entorno_usuario }}"
+
 
 #========================================
 # Dotfiles 

@@ -9,7 +9,7 @@
   kewlfft.aur.aur:
     name: "{{ aur_packages }}"
     state: present
-    user: "{{ ansible_user_id }}" # yay no debe correr como root
+    user: "{{ entorno_usuario }}" # yay no debe correr como root
   become: no
 
 - name: Asegurar que el repositorio Flathub está configurado
