@@ -3,7 +3,7 @@
 BASE_DIR="$HOME/.config/wallpapers"
 
 # Selección de carpeta
-DIR=$(find "$BASE_DIR" -mindepth 1 -maxdepth 1 -type d | sed "s|$BASE_DIR/||" | rofi -dmenu -p "📂 Carpeta")
+DIR=$(find -L "$BASE_DIR" -mindepth 1 -maxdepth 1 -type d | sed "s|$BASE_DIR/||" | rofi -dmenu -p "📂 Carpeta")
 [ -z "$DIR" ] && exit 0
 
 # Construir lista de imágenes con opción de volver
