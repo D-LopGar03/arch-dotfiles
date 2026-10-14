@@ -8,7 +8,7 @@
   tags: [kernel, modulos]
 
 - name: Instalar paquetes necesarios (Pacman, AUR, Flatpak)
-  ansible.builtin.include_tasks: packages.yml  
+  ansible.builtin.include_tasks: packages.yml
 
 - name: Permisos | Aplicar umask, robustecer cron, home y configuraciones de Hyprland
   ansible.builtin.include_tasks: permissions.yml

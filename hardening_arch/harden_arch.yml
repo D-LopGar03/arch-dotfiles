@@ -1,5 +1,5 @@
 ---
-- name: Bastionado Completo y Automatizacion de Seguridad para Arch Linux (Wi-Fi Seguro)
+- name: Bastionado Completo y Automatizacion de Seguridad para Arch Linux
   hosts: localhost
   ignore_unreachable: true
   become: true
