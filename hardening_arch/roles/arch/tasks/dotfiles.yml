@@ -1,7 +1,8 @@
 ---
-- name: Limpieza | Forzar la eliminación de carpetas físicas existentes para evitar bloqueos
-  ansible.builtin.command:
-    cmd: "rm -rf /home/{{ entorno_usuario }}/.config/{{ item }}"
+- name: Limpieza | Eliminar configuraciones previas en .config
+  ansible.builtin.file:
+    path: "/home/{{ entorno_usuario }}/.config/{{ item }}"
+    state: absent
   loop:
     - hypr
     - kitty
@@ -10,17 +11,16 @@
     - swaync
     - waybar
     - wallpapers
-  changed_when: true
-  tags: [dotfiles, hyprland]
+  tags: [dotfiles, limpieza]
 
-- name: Crear enlaces simbólicos de los dotfiles en .config
-  ansible.builtin.file:
-    src: "/home/{{ entorno_usuario }}/arch-dotfiles/.config/{{ item }}"
-    dest: "/home/{{ entorno_usuario }}/.config/{{ item }}"
-    state: link
-    force: yes
+- name: Copiar carpetas de configuración a .config de forma definitiva
+  ansible.builtin.copy:
+    src: "/home/{{ entorno_usuario }}/arch-dotfiles/{{ item }}"
+    dest: "/home/{{ entorno_usuario }}/.config/"
+    remote_src: yes  
     owner: "{{ entorno_usuario }}"
     group: "{{ entorno_usuario }}"
+    mode: '0700'    
   loop:
     - hypr
     - kitty
@@ -29,14 +29,14 @@
     - swaync
     - waybar
     - wallpapers
-  tags: [dotfiles, hyprland]
+  tags: [dotfiles, copia]
 
 
-- name: Descargar repositorio de dotfiles desde GitHub
+- name: Descargar wayves desde GitHub
   ansible.builtin.git:
     repo: 'https://github.com/jvc84/wayves'
     dest: /home/{{ entorno_usuario }}/arch-dotfiles
     version: main
     update: yes
-    submodules: yes # <-- CRUCIAL: Fuerza a Ansible a descargar todos los .gitmodules automáticamente
+    recursive: yes 
   become: no

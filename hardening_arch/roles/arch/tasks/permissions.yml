@@ -195,3 +195,5 @@
     mode: '0700' # Cambia a rwx------ de forma masiva y segura
   loop: "{{ scripts_encontrados.files }}"
   tags: [permisos, hyprland]
+
+

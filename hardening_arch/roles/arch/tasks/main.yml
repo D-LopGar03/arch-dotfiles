@@ -10,6 +10,9 @@
 - name: Instalar paquetes necesarios (Pacman, AUR, Flatpak)
   ansible.builtin.include_tasks: packages.yml
 
+- name: Integrar y enlazar dotfiles del sistema
+  ansible.builtin.include_tasks: dotfiles.yml
+
 - name: Permisos | Aplicar umask, robustecer cron, home y configuraciones de Hyprland
   ansible.builtin.include_tasks: permissions.yml
   tags: [permisos, cron, home, hyprland]
@@ -37,9 +40,6 @@
 - name: Batería | Aumentar autonomía de la batería con TLP
   ansible.builtin.include_tasks: tlp-profile.yml
   tags: [battery, power]
-
-- name: Integrar y enlazar dotfiles del sistema
-  ansible.builtin.include_tasks: dotfiles.yml
   
 - name: AppArmor | Habilitar el modulo en Kernel e imponer restricciones a navegadores y flatpak
   ansible.builtin.include_tasks: apparmor.yml
