@@ -1,0 +1,31 @@
+---
+- name: Kernel | Aplicar parámetros sysctl de hardening
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/99-hardening.conf
+    state: present
+    reload: false
+  loop: "{{ sysctl_hardening | dict2items }}"
+  notify: Recargar sysctl
+  tags: [kernel]
+
+- name: Kernel | Mitigar la superficie de ataque del Kernel en vivo (ModuleJail)
+  ansible.builtin.shell:
+    cmd: "curl -fsSL https://raw.githubusercontent.com/jnuyens/modulejail/v1.6.2/modulejail | sh -s -- --profile {{ modulejail_profile }} --install-initramfs-hook --yes"
+  register: modulejail_output
+  changed_when: "'blacklisted' in modulejail_output.stdout"
+  tags: [kernel]
+
+- name: Módulos | Bloquear drivers innecesarios
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/hardening-bloqueados.conf
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      {% for m in modulos_bloqueados %}
+      blacklist {{ m }}
+      install {{ m }} /bin/false
+      {% endfor %}
+  tags: [modulos]

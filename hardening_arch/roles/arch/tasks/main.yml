@@ -1,0 +1,46 @@
+---
+# =====================================================================
+# Playbook Principal de Tareas (tasks/main.yml) - Hardening Personal
+# =====================================================================
+
+- name: Kernel | Aplicar parametros sysctl, modulejail y bloquear modulos
+  ansible.builtin.include_tasks: kernel.yml
+  tags: [kernel, modulos]
+
+- name: Instalar paquetes necesarios (Pacman, AUR, Flatpak)
+  ansible.builtin.include_tasks: packages.yml  
+
+- name: Permisos | Aplicar umask, robustecer cron, home y configuraciones de Hyprland
+  ansible.builtin.include_tasks: permissions.yml
+  tags: [permisos, cron, home, hyprland]
+
+- name: Almacenamiento | Endurecer puntos de montaje (/tmp con systemd y /dev/shm)
+  ansible.builtin.include_tasks: mounts.yml
+  tags: [mounts, seguridad]
+
+- name: Firewall | Configurar politicas UFW, KVM y la IP de KDE Connect
+  ansible.builtin.include_tasks: firewall.yml
+  tags: [ufw, firewall, kde-connect]
+
+- name: Red | Configurar systemd-resolved con DNS de AdGuard y apagar de raiz IPv6
+  ansible.builtin.include_tasks: networking.yml
+  tags: [red, dns, ipv6]
+
+- name: Hardening | Deshabilitar volcados de memoria (Core Dumps a nivel sistema y systemd)
+  ansible.builtin.include_tasks: disable_core_dumps.yml
+  tags: [seguridad, coredumps]
+
+- name: Sandboxing | Aplicar mitigaciones estrictas a alsa-state y libvirtd en systemd
+  ansible.builtin.include_tasks: sandboxing.yml
+  tags: [sandboxing, systemd]
+
+- name: Batería | Aumentar autonomía de la batería con TLP
+  ansible.builtin.include_tasks: tlp-profile.yml
+  tags: [battery, power]
+
+- name: Integrar y enlazar dotfiles del sistema
+  ansible.builtin.include_tasks: dotfiles.yml
+  
+- name: AppArmor | Habilitar el modulo en Kernel e imponer restricciones a navegadores y flatpak
+  ansible.builtin.include_tasks: apparmor.yml
+  tags: [apparmor, flatpak, seguridad]

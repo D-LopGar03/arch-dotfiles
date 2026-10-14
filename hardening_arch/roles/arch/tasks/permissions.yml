@@ -1,0 +1,176 @@
+---
+
+# =====================================================================
+# Permisos y umask
+# =====================================================================
+- name: Permisos | Aplicar mascara umask estricta en bashrc
+  ansible.builtin.replace:
+    path: /etc/bash.bashrc
+    regexp: 'umask [0-7]{3}'
+    replace: 'umask 027'
+  tags: [permisos]
+
+- name: Permisos | umask 027 en /etc/profile y csh.cshrc
+  ansible.builtin.lineinfile:
+    path: "{{ item }}"
+    line: 'umask 027'
+    create: true
+    mode: '0644'
+    owner: root
+    group: root
+  loop:
+    - /etc/profile
+    - /etc/csh.cshrc
+  tags: [permisos]
+
+- name: Permisos | UMASK 027 en login.defs
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: '^\s*UMASK\s+'
+    line: 'UMASK 027'
+  tags: [permisos]
+
+# =====================================================================
+# Cron (CIS)
+# =====================================================================
+- name: Permisos | Blindar directorios de tareas programadas (Cron CIS Compliance)
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: '0700'
+    state: directory
+  loop:
+    - /etc/cron.d
+    - /etc/cron.daily
+    - /etc/cron.hourly
+    - /etc/cron.weekly
+    - /etc/cron.monthly
+  tags: [permisos, cron]
+
+- name: Permisos | Blindar /etc/crontab
+  ansible.builtin.file:
+    path: /etc/crontab
+    owner: root
+    group: root
+    mode: '0600'
+    state: file
+  ignore_errors: true   
+  tags: [permisos, cron]
+
+- name: Permisos | Eliminar cron.deny (CIS usar lista blanca)
+  ansible.builtin.file:
+    path: /etc/cron.deny
+    state: absent
+  tags: [permisos, cron]
+
+- name: Permisos | Crear cron.allow restringido a root
+  ansible.builtin.copy:
+    content: "root\n"
+    dest: /etc/cron.allow
+    owner: root
+    group: root
+    mode: '0600'
+    force: false
+  tags: [permisos, cron]
+  
+
+# =====================================================================
+# Restringir permisos de otros usuarios al home y root
+# =====================================================================
+
+- name: Permisos | Asegurar directorios residenciales (Home y Root)
+  block:
+    - name: Permisos | Garantizar acceso exclusivo a /root
+      ansible.builtin.file:
+        path: /root
+        owner: root
+        group: root
+        mode: '0700'
+        state: directory
+
+    - name: Permisos | Restringir acceso de otros usuarios a tu Home personal
+      ansible.builtin.file:
+        path: "/home/{{ entorno_usuario }}" # Invoca tu variable de forma limpia
+        owner: "{{ entorno_usuario }}"
+        group: "{{ entorno_usuario }}"
+        mode: '0700'
+        state: directory
+  tags: [permisos, home]
+
+
+#======================================================================
+# Almacenamiento Temporal Segurizado (/tmp y Sockets de Hyprland)
+#======================================================================
+
+- name: Asegurar /tmp con noexec usando systemd (Evita conflictos en fstab)
+  block:
+    - name: Crear directorio de configuración para el montaje de /tmp
+      ansible.builtin.file:
+        path: /etc/systemd/system/tmp.mount.d
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Aplicar opciones de seguridad (noexec, nosuid, nodev)
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/tmp.mount.d/options.conf
+        content: |
+          [Mount]
+          Options=mode=1777,strictatime,nosuid,nodev,noexec
+        mode: '0644'
+        owner: root
+        group: root
+
+    - name: Recargar el demonio de systemd para aplicar los cambios
+      ansible.builtin.systemd:
+        daemon_reload: true
+  tags: [seguridad, almacenamiento]
+
+# 2. Proteger la sesión de Hyprland redirigiendo sus procesos a una ruta segura
+- name: Asegurar que las variables de entorno de Wayland/Hyprland usen rutas seguras
+  ansible.builtin.lineinfile:
+    path: "/home/{{ entorno_usuario }}/.config/hypr/hyprland.conf"
+    line: "env = XDG_RUNTIME_DIR,/run/user/1000"
+    state: present
+  tags: [hyprland]
+
+
+# =====================================================================
+# Aislar compiladores solo a ROOT
+# =====================================================================
+
+
+- name: Aislar los compiladores comunes para restringir ejecuciones maliciosas (HRDN-7222)
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: 'o-x'
+  loop:
+    - /usr/bin/gcc
+    - /usr/bin/g++
+  ignore_errors: true
+
+# =====================================================================
+# Evitar redirecciones maliciosas
+# =====================================================================
+
+- name: Hacer inmutable el archivo de hosts para evitar redirecciones maliciosas
+  ansible.builtin.file:
+    path: /etc/hosts
+    attributes: +i
+
+# =====================================================================
+# Protección de Entorno Gráfico (Hyprland / Waybar / Foot)
+# =====================================================================
+- name: Permisos | Asegurar de forma recursiva toda la carpeta .config del usuario
+  ansible.builtin.file:
+    path: "/home/{{ entorno_usuario }}/.config"
+    owner: "{{ entorno_usuario }}"
+    group: "{{ entorno_usuario }}"
+    mode: '0700' # Dueño hace todo; grupo y otros no pueden ni ver qué carpetas existen
+    state: directory
+    recurse: yes # Forzar la herencia en todos los subdirectorios y archivos internos
+  tags: [permisos, hyprland]

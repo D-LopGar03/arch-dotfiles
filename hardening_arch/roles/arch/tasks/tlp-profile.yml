@@ -1,0 +1,52 @@
+---
+# =====================================================================
+# Optimización de Batería: TLP + Hyprland en Arch Linux
+# =====================================================================
+
+- name: Batería | Asegurar que TLP y las utilidades esenciales están instalados
+  community.general.pacman:
+    name:
+      - tlp
+      - hypridle # Gestor oficial de inactividad para Hyprland
+    state: present
+  tags: [battery, power]
+
+- name: Batería | Desactivar servicios conflictivos (Recomendado por TLP)
+  ansible.builtin.systemd_service:
+    name: "{{ item.name }}"
+    enabled: false
+    state: stopped
+    masked: "{{ item.mask }}"
+  loop:
+    - { name: 'power-profiles-daemon.service', mask: true } # Conflicto directo con TLP
+    - { name: 'systemd-rfkill.service', mask: true }        # TLP maneja mejor los estados de radio (Wi-Fi/BT)
+    - { name: 'systemd-rfkill.socket', mask: true }
+  ignore_errors: true
+  tags: [battery, power]
+
+- name: Batería | Ajustar la configuración de TLP para el rendimiento de Hyprland
+  # Evita tirones de FPS en Hyprland ajustando las frecuencias del procesador y GPU
+  ansible.builtin.lineinfile:
+    path: /etc/tlp.conf
+    regexp: "^#?{{ item.key }}="
+    line: "{{ item.key }}=\"{{ item.value }}\""
+  loop:
+    # Fuerza el ahorro en batería desactivando el Turbo Boost de la CPU
+    - { key: 'CPU_BOOST_ON_BAT', value: '0' }
+    - { key: 'CPU_HWP_DYN_BOOST_ON_BAT', value: '0' }
+    # Gobernadores de energía equilibrados para evitar lag gráfico en Wayland
+    - { key: 'CPU_SCALING_GOVERNOR_ON_BAT', value: 'powersave' }
+    - { key: 'CPU_ENERGY_PERF_POLICY_ON_BAT', value: 'balance_power' }
+    # Umbrales de carga para cuidar la vida útil de la batería (Ajusta según tu marca de laptop)
+    - { key: 'START_CHARGE_THRESH_BAT0', value: '75' }
+    - { key: 'STOP_CHARGE_THRESH_BAT0', value: '80' }
+  register: tlp_config
+  tags: [battery, power]
+
+- name: Batería | Iniciar y asegurar el servicio activo de TLP
+  ansible.builtin.systemd_service:
+    name: tlp.service
+    enabled: true
+    state: started
+  notify: Reiniciar servicio TLP
+  tags: [battery, power]

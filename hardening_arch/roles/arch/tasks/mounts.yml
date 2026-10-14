@@ -1,0 +1,22 @@
+---
+
+# =====================================================================
+# Endurecimiento de Puntos de Montaje Virtuales (/dev/shm)
+# =====================================================================
+
+- name: Montajes | Endurecer /dev/shm (Manteniendo compatibilidad multimedia)
+  ansible.posix.mount:
+    path: /dev/shm
+    src: tmpfs
+    fstype: tmpfs
+    # Quitamos 'noexec' para evitar que colapsen Chrome, Discord, Steam e Hyprland
+    opts: "defaults,nodev,nosuid" 
+    state: present # 'present' lo escribe en fstab de forma segura sin forzar un re-montaje físico en caliente
+  tags: [mounts]
+
+- name: Montajes | Verificar que las opciones básicas de seguridad estén activas
+  ansible.builtin.command: findmnt -no OPTIONS /dev/shm
+  register: reg_devshm_opts
+  changed_when: false
+  failed_when: "'nosuid' not in reg_devshm_opts.stdout"
+  tags: [mounts]

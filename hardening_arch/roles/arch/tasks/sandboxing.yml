@@ -1,0 +1,44 @@
+---
+
+- name: Crear directorio drop-in para el endurecimiento de ALSA
+  ansible.builtin.file:
+    path: /etc/systemd/system/alsa-state.service.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Aplicar Sandboxing estricto al servicio de audio (alsa-state)
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/alsa-state.service.d/override.conf
+    content: |
+      [Service]
+      RestrictAddressFamilies=AF_UNIX
+      NoNewPrivileges=yes
+      ProtectSystem=strict
+      ProtectHome=yes
+    mode: '0644'
+    owner: root
+    group: root
+  notify: Reload systemd
+
+- name: Crear directorio drop-in para el endurecimiento de libvirtd
+  ansible.builtin.file:
+    path: /etc/systemd/system/libvirtd.service.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Reducir la exposicion del entorno de Maquinas Virtuales (libvirtd)
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/libvirtd.service.d/override.conf
+    content: |
+      [Service]
+      ProtectSystem=full
+      ProtectHostname=yes
+      RestrictSUIDSGID=yes
+    mode: '0644'
+    owner: root
+    group: root
+  notify: Reload systemd

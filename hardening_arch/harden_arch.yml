@@ -1,0 +1,11 @@
+---
+- name: Bastionado Completo y Automatizacion de Seguridad para Arch Linux (Wi-Fi Seguro)
+  hosts: localhost
+  ignore_unreachable: true
+  become: true
+  force_handlers: true 
+
+  roles:
+    - arch
+
+

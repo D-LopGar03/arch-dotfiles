@@ -1,0 +1,12 @@
+---
+
+- name: Prevenir el almacenamiento de Core Dumps en los servicios de systemd
+  ansible.builtin.copy:
+    dest: /etc/systemd/coredump.conf.d/disable.conf
+    content: |
+      [Coredump]
+      Storage=none
+      ProcessSizeMax=0
+    owner: root
+    group: root
+    mode: '0600' # Cambiado a 0600 y entre comillas para evitar problemas de interpretación octal

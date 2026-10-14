@@ -1,0 +1,78 @@
+---
+- name: Red | Remover configuracion previa de iwd en NetworkManager para evitar conflictos
+  ansible.builtin.file:
+    path: /etc/NetworkManager/conf.d/wifi_backend.conf
+    state: absent
+
+- name: Red | Asegurar que wpa_supplicant y NetworkManager esten activos y habilitados
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - wpa_supplicant
+    - NetworkManager
+
+- name: Red | Deshabilitar IPv6 mediante parametros del Kernel (sysctl)
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: "1"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-disable-ipv6.conf
+    reload: true
+  loop:
+    - net.ipv6.conf.all.disable_ipv6
+    - net.ipv6.conf.default.disable_ipv6
+    - net.ipv6.conf.lo.disable_ipv6
+
+- name: Red | Buscar entradas de configuracion de systemd-boot
+  ansible.builtin.find:
+    paths:
+      - /boot/loader/entries
+      - /efi/loader/entries
+    patterns: '*.conf'
+  register: boot_entries
+
+- name: Red | Configurar systemd-boot para bloquear IPv6 de raiz en el Kernel (Idempotente)
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    backrefs: true
+    regexp: '^options (.*)$'
+    line: 'options \1 ipv6.disable=1'
+  loop: "{{ boot_entries.files }}"
+  when: 
+    - boot_entries.matched > 0
+    # Evita duplicar el parámetro si ya se encuentra escrito en el archivo
+    - not item.path | ansible.builtin.search('ipv6.disable=1') 
+
+- name: Red | Crear el directorio de configuracion para systemd-resolved si no existe
+  ansible.builtin.file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Red | Configurar DNS principal y respaldo con cifrado TLS estricto (DNS Over TLS)
+  ansible.builtin.copy:
+    dest: /etc/systemd/resolved.conf.d/secure-dns.conf
+    content: |
+      [Resolve]
+      # IPs y dominios oficiales de AdGuard DNS (Filtro estándar de anuncios y malware)
+      DNS=94.140.14.14#://adguard-dns.com 94.140.15.15#://adguard-dns.com
+      FallbackDNS=1.1.1.1#cloudflare-dns.com
+      DNSOverTLS=yes
+    mode: '0644'
+    owner: root
+    group: root
+  notify: Restart systemd-resolved
+
+- name: Red | Enlazar NetworkManager con systemd-resolved
+  ansible.builtin.blockinfile:
+    path: /etc/NetworkManager/NetworkManager.conf
+    block: |
+      [main]
+      dns=systemd-resolved
+      rc-manager=symlink
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - NM DNS CONFIG"
+  notify: Restart NetworkManager

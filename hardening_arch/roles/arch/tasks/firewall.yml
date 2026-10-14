@@ -1,0 +1,36 @@
+---
+
+- name: Firewall | Instalar el paquete de UFW si no existe
+  community.general.pacman:
+    name: ufw
+    state: present
+
+- name: Firewall | Configurar politicas por defecto en UFW (Bloquear todo lo entrante)
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  loop:
+    - { direction: 'incoming', policy: 'deny' }
+    - { direction: 'outgoing', policy: 'allow' }
+
+- name: Firewall | Permitir conexiones entrantes y de ruta para la interfaz de VMs (virbr0)
+  community.general.ufw:
+    rule: allow
+    direction: in
+    interface: virbr0
+  tags: [ufw, kvm]
+
+- name: Firewall | Restringir KDE Connect estrictamente a la IP del celular
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ kde_connect_source_ip }}"
+    port: '1714:1764' 
+    proto: "{{ item }}"
+  loop:
+    - tcp
+    - udp
+  tags: [ufw, kde-connect]
+
+- name: Firewall | Forzar activacion del Firewall UFW
+  community.general.ufw:
+    state: enabled

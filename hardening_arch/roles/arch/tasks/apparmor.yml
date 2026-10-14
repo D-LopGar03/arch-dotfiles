@@ -1,0 +1,98 @@
+---
+# =====================================================================
+# Configuración y Endurecimiento con AppArmor (Navegadores Nativos)
+# =====================================================================
+
+- name: AppArmor | Instalar paquetes base de AppArmor y auditoría
+  community.general.pacman:
+    name:
+      - apparmor
+      - audit
+    state: present
+  tags: [apparmor]
+
+# --- DETECCIÓN DEL TIPO DE ARRANQUE (UKI vs .conf) ---
+- name: AppArmor | Comprobar si el sistema utiliza imágenes unificadas (UKI)
+  ansible.builtin.stat:
+    path: /etc/kernel/cmdline
+  register: apparmor_uki_cmdline
+  tags: [apparmor]
+
+- name: AppArmor | Buscar entradas tradicionales de configuracion de systemd-boot
+  ansible.builtin.find:
+    paths:
+      - /boot/loader/entries
+      - /efi/loader/entries
+    patterns: '*.conf'
+  register: apparmor_boot_entries
+  when: not apparmor_uki_cmdline.stat.exists
+  tags: [apparmor]
+
+# --- CASO 1: CONFIGURACIÓN PARA IMÁGENES UNIFICADAS (UKI) ---
+- name: AppArmor | Configurar /etc/kernel/cmdline para sistemas UKI (Idempotente)
+  ansible.builtin.replace:
+    path: /etc/kernel/cmdline
+    # Añade los parámetros al final si no existen en el archivo
+    regexp: '^(?!.*apparmor=1)(.*)$'
+    replace: '\1 apparmor=1 lsm=landlock,lockdown,yama,integrity,apparmor,bpf'
+  register: apparmor_uki_config_changed
+  when: apparmor_uki_cmdline.stat.exists
+  tags: [apparmor]
+
+- name: AppArmor | Regenerar imágenes unificadas (UKI) si hubo cambios en la configuración
+  ansible.builtin.command: mkinitcpio -P
+  changed_when: true
+  when: 
+    - apparmor_uki_cmdline.stat.exists
+    - apparmor_uki_config_changed.changed
+  tags: [apparmor]
+
+# --- CASO 2: CONFIGURACIÓN PARA ARRANQUE TRADICIONAL (.conf) ---
+- name: AppArmor | Asegurar la activacion en los parametros de arranque tradicionales (Idempotente)
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    backrefs: true
+    regexp: '^options (.*)$'
+    line: 'options \1 apparmor=1 lsm=landlock,lockdown,yama,integrity,apparmor,bpf'
+  loop: "{{ apparmor_boot_entries.files | default([]) }}"
+  when:
+    - not apparmor_uki_cmdline.stat.exists
+    - apparmor_boot_entries.matched | default(0) > 0
+    - not item.path | ansible.builtin.search('apparmor=1')
+  tags: [apparmor]
+
+# --- SERVICIOS Y APLICACIÓN DE PERFILES ---
+- name: AppArmor | Habilitar e iniciar los servicios del sistema
+  ansible.builtin.systemd_service: # Actualizado al nombre de módulo recomendado moderno
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - apparmor
+    - auditd
+  tags: [apparmor]
+
+- name: AppArmor | Poner los navegadores nativos en modo Enforce (Bloqueo)
+  ansible.builtin.command: "aa-enforce {{ item }}"
+  loop: "{{ apparmor_enforce_profiles }}"
+  changed_when: false
+  ignore_errors: true
+  tags: [apparmor]
+
+# =====================================================================
+# Endurecimiento de Navegadores Flatpak (Brave)
+# =====================================================================
+
+- name: Flatpak | Quitar acceso al sistema de archivos global a Brave Flatpak
+  ansible.builtin.command: "flatpak override {{ item }} --nofilesystem=host --nofilesystem=home"
+  loop: "{{ flatpak_browsers }}"
+  changed_when: false
+  ignore_errors: true 
+  tags: [flatpak, seguridad]
+
+- name: Flatpak | Permitir a Brave acceder UNICAMENTE a su carpeta de Descargas
+  ansible.builtin.command: "flatpak override {{ item }} --filesystem=xdg-download"
+  loop: "{{ flatpak_browsers }}"
+  changed_when: false
+  ignore_errors: true
+  tags: [flatpak, seguridad]

@@ -1,0 +1,27 @@
+---
+# =====================================================================
+# Manejadores Globales del Rol (handlers/main.yml)
+# =====================================================================
+
+- name: Restart NetworkManager
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: restarted
+
+- name: Restart systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Recargar sysctl
+  ansible.builtin.command: sysctl --system
+  changed_when: true
+
+- name: Reiniciar servicio TLP
+  ansible.builtin.systemd_service:
+    name: tlp.service
+    state: restarted

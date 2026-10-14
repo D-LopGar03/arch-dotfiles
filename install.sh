@@ -1,89 +1,37 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Description: Install all packages and dependencies needed for this configuration
+# Detener el script si ocurre algún error
+set -e
 
-configure(){
-  if [ ! -d $HOME/.config ]; then
-    mkdir -p "$HOME/.config/"
+# Colores para la terminal
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-  fi
+echo -e "${BLUE}[*] Iniciando el setup de Arch-Dotfiles...${NC}"
 
-  cp -r * "$HOME/.config/" 
-}
+# 1. Asegurar que el sistema está actualizado y con las herramientas base
+echo -e "${BLUE}[*] Verificando dependencias esenciales (pacman)...${NC}"
+sudo pacman -Syu --needed --noconfirm git ansible base-devel
 
-copy_fonts(){
-  sudo mkdir -p "/usr/share/fonts/HackNerdFonts"
-  cd HackNerdFonts
-  sudo wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/Hack.zip
-  sudo unzip Hack.zip
-  sudo rm -r Hack.zip
-  sudo mv *.ttf "/usr/share/fonts/HackNerdFonts/"
-}
-
-install_pacman_packages(){
-
-  # UPDATE PACMAN
-  sudo pacman -Syuu
-
-  # PACMAN PACKAGES
-
-  sudo pacman -S --noconfirm --needed git base-devel neovim rsync xclip virtualbox-host-modules-arch docker docker-compose openfortivpn swww nwg-look keepassxc obsidian rofi bpytop vivaldi brightnessctl waybar pavucontrol pipewire pipewire-pulse lftp python-pillow zsh unzip zip ranger lsd bat timeshift qalculate-gtk tlp network-manager-applet
-
-  # PACMAN PACKAGES UNINSTALL
-
-  sudo pacman -R wofi vim nano 
-
-}
-
-
-init(){
-  chmod +x "$HOME/.config/scripts/*" 
-  swww img "$HOME/.config/wallpapers/retro-gaming/pacman-vintage-arcade-4k-wallpapers.jpg"
-  wal -i "$HOME/.config/wallpapers/retro-gaming/pacman-vintage-arcade-4k-wallpapers.jpg" 
-  waybar &
-  hyprctl reload
-  sudo systemctl enable --now iwd
-
-}
-
-
-chsh_func(){
-  echo "Update your shell to /bin/zsh."
-  chsh -s /bin/zsh $USER
-}
-
-
-install_yay() {
-  # If not exists create the folder 
-  mkdir -p "$HOME/Documents/Repositories"
-  cd "$HOME/Documents/Repositories" || exit
-
-  # Clone and compile yay-bin
-  git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin || exit
-  makepkg -si --noconfirm
-
-  # Update system with yay
-  yay -Syuu --noconfirm
-
-  # Install additional packages with yay
-  yay -S --noconfirm python-pywal16 visual-studio-code-bin swaylock-effectss
-}
-
-# If yay not exist in the system, install it
-if ! command -v yay &>/dev/null; then
-  install_yay
-else
-  echo "yay is already installed."
+# 2. Instalar la colección de Ansible para soporte de AUR si no existe
+echo -e "${BLUE}[*] Configurando dependencias de Ansible...${NC}"
+if ! ansible-galaxy collection list | grep -q 'kewlfft.aur'; then
+  ansible-galaxy collection install kewlfft.aur
 fi
 
-install_pacman_packages
-configure
-chsh_func
-copy_fonts
-init
+# 3. Moverse al directorio del playbook y ejecutar Ansible
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+PLAYBOOK_DIR="$SCRIPT_DIR/hardening_arch"
 
-echo "System will reboot in 5 seconds"
-sleep 5
-reboot
+if [ -d "$PLAYBOOK_DIR" ]; then
+  echo -e "${GREEN}[+] Ejecutando el flujo de Ansible...${NC}"
+  cd "$PLAYBOOK_DIR"
+  # Se usa -K para pedir la contraseña de sudo una sola vez al inicio
+  ansible-playbook -K harden_arch.yml
+else
+  echo -e " error: No se encontró la carpeta hardening_arch en $SCRIPT_DIR"
+  exit 1
+fi
 
-
+echo -e "${GREEN}[+] ¡Todo listo! Tu sistema ha sido configurado con éxito.${NC}"

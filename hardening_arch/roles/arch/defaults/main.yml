@@ -1,0 +1,131 @@
+# =====================================================================
+# Hardening Sysctl
+# =====================================================================
+sysctl_hardening:
+  dev.tty.ldisc_autoload: "0"
+  fs.protected_fifos: "2"
+  fs.protected_regular: "2"
+  fs.suid_dumpable: "0"
+  kernel.kptr_restrict: "2"
+  kernel.randomize_va_space: "2"
+  kernel.core_pattern: "|/bin/false"
+  kernel.sysrq: "0"
+  kernel.unprivileged_bpf_disabled: "1"
+  kernel.yama.ptrace_scope: "1"
+  net.core.bpf_jit_harden: "2"
+  net.ipv4.conf.all.accept_redirects: "0"
+  net.ipv4.conf.default.accept_redirects: "0"
+  net.ipv4.conf.all.send_redirects: "0"
+  net.ipv4.conf.all.log_martians: "1"
+  net.ipv4.conf.default.log_martians: "1"
+  net.ipv4.conf.all.rp_filter: "1"
+  net.ipv6.conf.all.accept_redirects: "0"
+  net.ipv6.conf.default.accept_redirects: "0"
+  
+
+
+# =====================================================================
+# Bloqueo de módulos innecesarios
+# =====================================================================
+
+modulos_bloqueados:
+  - dccp
+  - sctp
+  - rds
+  - tipc
+  - cramfs
+  - freevxfs
+  - hfs
+  - hfsplus
+  - jffs2
+  - firewire-sbp2
+  - firewire-core
+  - firewire-ohci
+  - sbsh
+
+
+# =====================================================================
+# Modulejail
+# =====================================================================
+
+modulejail_profile: "conservative"  # Opciones: minimal, conservative, desktop, firewall
+
+
+# =====================================================================
+# IP KDE Connect
+# =====================================================================
+kde_connect_source_ip: "192.168.0.10"
+
+
+
+# 1. Navegadores nativos de Arch (Usarán AppArmor)
+apparmor_native_browsers:
+  - "firefox"
+  - "vivaldi"
+
+apparmor_enforce_profiles: "{{ apparmor_native_browsers | map('regex_replace', '^', '/usr/bin/') | list }}"
+
+# 2. Navegadores Flatpak (Usarán endurecimiento de Flatpak overrides)
+flatpak_browsers:
+  - "com.brave.Browser"
+
+
+#========================================
+# Usuario 
+#========================================
+
+entorno_usuario: "ay4t0"
+
+#========================================
+# Dotfiles 
+#========================================
+
+dotfiles_repo_dir: "{{ playbook_dir }}/.."
+
+dotfiles_config_links:
+  - "hypr"
+  - "kitty"
+  - "ranger"
+  - "rofi"
+  - "swaync"
+  - "waybar"
+  - "wallpapers"
+  - "dolphinrc"
+
+# Paquetes oficiales de Pacman
+pacman_packages:
+  - networkmanager
+  - network-manager-applet
+  - obsidian
+  - virtualbox
+  - virtualbox-host-dkms
+  - waybar
+  - yay
+  - remmina
+  - keepassxc  
+  - vivaldi
+  - flatpak
+  - papirus-icon-theme
+  - swaync
+  - hyprlock
+  - brightnessctl
+  - digikam
+  - imagemagick
+  - poppler    
+  - gimp
+  - cava
+  - ranger
+  - gtk3
+  - gtk4
+  - kdeconnect
+
+# Paquetes de AUR
+aur_packages:
+  - python-pywal
+
+# Aplicaciones Flatpak
+flatpak_packages:
+  - com.vscodium.codium
+  - com.brave.Browser
+  - com.github.tchx84.Flatseal
+
