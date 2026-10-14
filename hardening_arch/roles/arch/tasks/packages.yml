@@ -30,7 +30,7 @@
 
 - name: AUR | Compilar yay-bin (Solo generar el paquete como usuario normal)
   ansible.builtin.command:
-    cmd: makepkg -s --noconfirm --needed
+    cmd: makepkg -s -f --noconfirm --needed
     chdir: /tmp/yay-bin
   become: no
   tags: [packages, yay]
