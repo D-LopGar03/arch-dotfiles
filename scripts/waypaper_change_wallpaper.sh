@@ -7,7 +7,7 @@ DIR=$(find -L "$BASE_DIR" -mindepth 1 -maxdepth 1 -type d | sed "s|$BASE_DIR/||"
 [ -z "$DIR" ] && exit 0
 
 # Construir lista de imágenes con opción de volver
-IMAGES=$(find "$BASE_DIR/$DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.gif" \))
+IMAGES=$(find -L "$BASE_DIR/$DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.gif" \))
 
 CHOICE=$(
   (
@@ -50,7 +50,7 @@ if [[ "$CHOICE" == "🔙 Volver" ]]; then
 fi
 
 # Recuperar la ruta completa a partir del nombre
-IMG=$(find "$BASE_DIR/$DIR" -type f -iname "$CHOICE" | head -n1)
+IMG=$(find -L "$BASE_DIR/$DIR" -type f -iname "$CHOICE" | head -n1)
 
 # Verificación
 [ -z "$IMG" ] && exit 1
