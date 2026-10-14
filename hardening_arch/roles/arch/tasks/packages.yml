@@ -45,7 +45,7 @@
   kewlfft.aur.aur:
     name: "{{ aur_packages }}"
     state: present
-    helper: yay
+    use: yay
   become: no
   vars:
     ansible_user: "{{ entorno_usuario }}"
