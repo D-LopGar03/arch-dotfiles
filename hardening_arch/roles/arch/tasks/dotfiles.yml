@@ -11,6 +11,7 @@
     - swaync
     - waybar
     - wallpapers
+    - scripts
   tags: [dotfiles, limpieza]
 
 - name: Copiar carpetas de configuración a .config de forma definitiva
@@ -29,14 +30,17 @@
     - swaync
     - waybar
     - wallpapers
+    - scripts
+  notify: Recargar Hyprland 
   tags: [dotfiles, copia]
 
 
 - name: Descargar wayves desde GitHub
   ansible.builtin.git:
     repo: 'https://github.com/jvc84/wayves'
-    dest: /home/{{ entorno_usuario }}/arch-dotfiles
+    dest: /home/{{ entorno_usuario }}/arch-dotfiles/scripts/wayves 
     version: main
     update: yes
-    recursive: yes 
+    recursive: yes
+    force: yes
   become: no

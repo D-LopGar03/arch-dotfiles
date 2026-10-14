@@ -25,3 +25,9 @@
   ansible.builtin.systemd_service:
     name: tlp.service
     state: restarted
+
+- name: Recargar Hyprland
+  ansible.builtin.command:
+    cmd: "hyprctl reload"
+  become: no
+  failed_when: false

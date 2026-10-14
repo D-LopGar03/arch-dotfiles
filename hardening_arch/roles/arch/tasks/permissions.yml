@@ -192,7 +192,7 @@
     path: "{{ item.path }}"
     owner: "{{ entorno_usuario }}"
     group: "{{ entorno_usuario }}"
-    mode: '0700' # Cambia a rwx------ de forma masiva y segura
+    mode: '0700' 
   loop: "{{ scripts_encontrados.files }}"
   tags: [permisos, hyprland]
 
