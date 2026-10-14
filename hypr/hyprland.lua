@@ -29,6 +29,19 @@ hl.monitor({
 	scale = 1,
 })
 
+-- =====================================================================
+-- Variables de Entorno para Renderizado por Software (VirtualBox)
+-- =====================================================================
+
+-- Forzar el uso de software para OpenGL (Evita el cierre de la terminal)
+hl.env("LIBGL_ALWAYS_SOFTWARE", "1")
+
+-- Desactivar el cursor por hardware para que no se vuelva invisible
+hl.env("WLR_NO_HARDWARE_CURSORS", "1")
+
+-- Permitir a Wayland usar el renderizador por software de respaldo
+hl.env("WLR_RENDERER_ALLOW_SOFTWARE", "1")
+
 -- apps libadwaita gtk4:
 
 hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
