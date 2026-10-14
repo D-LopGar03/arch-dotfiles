@@ -3,7 +3,7 @@
   ansible.builtin.package:
     name: "{{ pacman_packages }}"
     state: present
-  become: yes  # Requiere root
+  become: yes
 
 - name: Instalar aplicaciones Flatpak (a nivel de usuario)
   community.general.flatpak:
@@ -11,4 +11,36 @@
     state: present
     method: system
   become: no
+
+- name: Paquetes | Instalar dependencias para compilar desde AUR
+  community.general.pacman:
+    name:
+      - base-devel
+      - git
+    state: present
+  become: yes
+
+- name: AUR | Clonar repositorio de yay-bin
+  ansible.builtin.git:
+    repo: 'https://aur.archlinux.org/yay.git'
+    dest: /tmp/yay-bin
+    version: master
+    depth: 1
+  become: no
+
+- name: AUR | Compilar e instalar yay-bin usando makepkg
+  ansible.builtin.command:
+    cmd: makepkg -si --noconfirm
+    chdir: /tmp/yay-bin
+  become: no
+
+- name: AUR | Instalar lista masiva de paquetes desde AUR
+  kewlfft.aur.aur:
+    name: "{{ aur_packages }}"
+    state: present
+    helper: yay
+  become: no
+  vars:
+    ansible_user: "{{ entorno_usuario }}"
+  tags: [packages, aur]
 
