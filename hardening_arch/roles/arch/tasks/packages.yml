@@ -5,18 +5,10 @@
     state: present
   become: yes  # Requiere root
 
-- name: Asegurar que el repositorio Flathub está configurado
-  community.general.flatpak_remote:
-    name: flathub
-    state: present
-    method: user
-    url: https://flathub.org
-  become: no
-
 - name: Instalar aplicaciones Flatpak (a nivel de usuario)
   community.general.flatpak:
     name: "{{ flatpak_packages }}"
     state: present
-    method: user
+    method: system
   become: no
 

@@ -131,8 +131,8 @@
 # 2. Proteger la sesión de Hyprland redirigiendo sus procesos a una ruta segura
 - name: Asegurar que las variables de entorno de Wayland/Hyprland usen rutas seguras
   ansible.builtin.lineinfile:
-    path: "/home/{{ entorno_usuario }}/.config/hypr/hyprland.conf"
-    line: "env = XDG_RUNTIME_DIR,/run/user/1000"
+    path: "/home/{{ entorno_usuario }}/.config/hypr/hyprland.lua"
+    line: "hl.env(\"XDG_RUNTIME_DIR\", \"/run/user/1000\")" 
     state: present
   tags: [hyprland]
 
@@ -163,7 +163,7 @@
     attributes: +i
 
 # =====================================================================
-# Protección de Entorno Gráfico (Hyprland / Waybar / Foot)
+# Protección de Entorno Gráfico (Hyprland / Waybar)
 # =====================================================================
 - name: Permisos | Asegurar de forma recursiva toda la carpeta .config del usuario
   ansible.builtin.file:
@@ -173,4 +173,25 @@
     mode: '0700' # Dueño hace todo; grupo y otros no pueden ni ver qué carpetas existen
     state: directory
     recurse: yes # Forzar la herencia en todos los subdirectorios y archivos internos
+  tags: [permisos, hyprland]
+
+
+#=====================================================================
+# Dar permisos de ejecución a los scripts personalizados
+#=====================================================================
+
+- name: Permisos | Buscar todos los scripts .sh del usuario
+  ansible.builtin.find:
+    paths: "/home/{{ entorno_usuario }}/.config/scripts"
+    patterns: "*.sh"
+  register: scripts_encontrados
+  tags: [permisos, hyprland]
+
+- name: Permisos | Dar permisos de ejecución de forma segura a los scripts encontrados
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: "{{ entorno_usuario }}"
+    group: "{{ entorno_usuario }}"
+    mode: '0700' # Cambia a rwx------ de forma masiva y segura
+  loop: "{{ scripts_encontrados.files }}"
   tags: [permisos, hyprland]

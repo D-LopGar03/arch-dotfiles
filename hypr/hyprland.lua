@@ -53,11 +53,11 @@ local terminal = "kitty"
 
 local fileManager = "dolphin"
 
-local menu = 'os.getenv("HOME")/.config/scripts/./rofi.sh'
+local menu = os.getenv("HOME") .. "/.config/scripts/./rofi.sh"
 
-local browser = "vivaldi"
+local browser = "com.brave.Browser"
 
-local textEditor = "code"
+local textEditor = "com.vscodium.codium"
 
 local sniff = "wireshark"
 
@@ -65,9 +65,11 @@ local passManager = "keepassxc"
 
 local mdText = "obsidian"
 
-local screenLock = 'os.getenv("HOME")/.config/scripts/./screen_lock.sh'
+local wallpaper = os.getenv("HOME") .. "/.config/scripts/change_wallpaper.sh"
 
-local toggleMic = 'os.getenv("HOME")/.config/scripts/./toggle-mic.sh'
+local screenLock = os.getenv("HOME") .. "/.config/scripts/./screen_lock.sh"
+
+local toggleMic = os.getenv("HOME") .. "/.config/scripts/./toggle-mic.sh"
 
 --###########################
 
@@ -225,43 +227,40 @@ local mainMod = "ALT"
 
 local altMod = "MOD4"
 
-hl.bind(mainMod .. " + " .. "Q", hl.dsp.exec_cmd("kitty"))
+hl.bind(mainMod .. " + " .. "Q", hl.dsp.exec_cmd(terminal))
 
 hl.bind(mainMod .. " + " .. "C", hl.dsp.window.close())
 
 hl.bind(mainMod .. " + " .. "M", hl.dsp.exit())
 
-hl.bind(mainMod .. " + " .. "E", hl.dsp.exec_cmd("dolphin"))
+hl.bind(mainMod .. " + " .. "E", hl.dsp.exec_cmd(fileManager))
 
 hl.bind(mainMod .. " + " .. "V", hl.dsp.window.float())
 
-hl.bind(mainMod .. " + " .. "R", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/scripts/./rofi.sh"))
+hl.bind(mainMod .. " + " .. "R", hl.dsp.exec_cmd(menu))
 
 hl.bind(mainMod .. " + " .. "P", hl.dsp.window.pseudo())
 
-hl.bind(mainMod .. " + " .. "B", hl.dsp.exec_cmd("vivaldi"))
+hl.bind(mainMod .. " + " .. "B", hl.dsp.exec_cmd(browser))
 
-hl.bind(" + " .. altMod .. " + " .. "R", hl.dsp.exec_cmd("reboot"))
+hl.bind(altMod .. " + " .. "R", hl.dsp.exec_cmd("reboot"))
 
-hl.bind(" + " .. altMod .. " + " .. "A", hl.dsp.exec_cmd("poweroff"))
+hl.bind(altMod .. " + " .. "A", hl.dsp.exec_cmd("poweroff"))
 
-hl.bind(
-	" + " .. altMod .. " + " .. "F",
-	hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/scripts/waypaper_change_wallpaper.sh")
-)
+hl.bind(altMod .. " + " .. "F", hl.dsp.exec_cmd(wallpaper))
 
-hl.bind(" + " .. altMod .. " + " .. "C", hl.dsp.exec_cmd("code"))
+hl.bind(altMod .. " + " .. "C", hl.dsp.exec_cmd(textEditor))
 
-hl.bind(mainMod .. " + " .. "K", hl.dsp.exec_cmd("keepassxc"))
+hl.bind(mainMod .. " + " .. "K", hl.dsp.exec_cmd(passManager))
 
-hl.bind(mainMod .. " + " .. "O", hl.dsp.exec_cmd("obsidian"))
+hl.bind(mainMod .. " + " .. "O", hl.dsp.exec_cmd(mdText))
 
 hl.bind(
 	mainMod .. " + " .. "SHIFT" .. " + " .. "L",
 	hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/scripts/./screen_lock.sh")
 )
 
-hl.bind(mainMod .. " + " .. "W", hl.dsp.exec_cmd("wireshark"))
+hl.bind(mainMod .. " + " .. "W", hl.dsp.exec_cmd(sniff))
 
 hl.bind(
 	mainMod .. " + " .. "SHIFT" .. " + " .. "S",
@@ -418,3 +417,4 @@ hl.on("config.reloaded", function()
 	hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
 	hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3")
 end)
+hl.env("XDG_RUNTIME_DIR", "/run/user/1000")

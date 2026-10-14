@@ -17,3 +17,11 @@
     group: "{{ entorno_usuario }}"
   loop: "{{ dotfiles_config_links }}"
 
+- name: Descargar repositorio de dotfiles desde GitHub
+  ansible.builtin.git:
+    repo: 'https://github.com/jvc84/wayves'
+    dest: /home/{{ entorno_usuario }}/arch-dotfiles
+    version: main
+    update: yes
+    submodules: yes # <-- CRUCIAL: Fuerza a Ansible a descargar todos los .gitmodules automáticamente
+  become: no
