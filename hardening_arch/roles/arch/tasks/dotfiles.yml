@@ -1,21 +1,36 @@
 ---
-- name: Asegurar que el directorio .config existe para el usuario
-  ansible.builtin.file:
-    path: "{{ entorno_home }}/.config"
-    state: directory
-    mode: '0755'
-    owner: "{{ entorno_usuario }}"
-    group: "{{ entorno_usuario }}"
+- name: Limpieza | Forzar la eliminación de carpetas físicas existentes para evitar bloqueos
+  ansible.builtin.command:
+    cmd: "rm -rf /home/{{ entorno_usuario }}/.config/{{ item }}"
+  loop:
+    - hypr
+    - kitty
+    - ranger
+    - rofi
+    - swaync
+    - waybar
+    - wallpapers
+  changed_when: true
+  tags: [dotfiles, hyprland]
 
 - name: Crear enlaces simbólicos de los dotfiles en .config
   ansible.builtin.file:
-    src: "{{ playbook_dir }}/../{{ item }}"
-    dest: "{{ entorno_home }}/.config/{{ item }}"
+    src: "/home/{{ entorno_usuario }}/arch-dotfiles/.config/{{ item }}"
+    dest: "/home/{{ entorno_usuario }}/.config/{{ item }}"
     state: link
     force: yes
     owner: "{{ entorno_usuario }}"
     group: "{{ entorno_usuario }}"
-  loop: "{{ dotfiles_config_links }}"
+  loop:
+    - hypr
+    - kitty
+    - ranger
+    - rofi
+    - swaync
+    - waybar
+    - wallpapers
+  tags: [dotfiles, hyprland]
+
 
 - name: Descargar repositorio de dotfiles desde GitHub
   ansible.builtin.git:
