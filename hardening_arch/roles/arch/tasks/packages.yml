@@ -28,19 +28,17 @@
     depth: 1
   become: no
 
-- name: AUR | Compilar e instalar yay-bin usando makepkg
+- name: AUR | Compilar yay-bin (Solo generar el paquete como usuario normal)
   ansible.builtin.command:
-    cmd: makepkg -si --noconfirm
+    cmd: makepkg -s --noconfirm --needed
     chdir: /tmp/yay-bin
   become: no
+  tags: [packages, yay]
 
-- name: AUR | Instalar lista masiva de paquetes desde AUR
-  kewlfft.aur.aur:
-    name: "{{ aur_packages }}"
-    state: present
-    helper: yay
-  become: no
-  vars:
-    ansible_user: "{{ entorno_usuario }}"
-  tags: [packages, aur]
+- name: AUR | Instalar el paquete compilado de yay (Como root)
+  ansible.builtin.shell:
+    cmd: pacman -U --noconfirm /tmp/yay-bin/yay-bin-*.pkg.tar.zst
+  become: yes
+  tags: [packages, yay]
+
 
