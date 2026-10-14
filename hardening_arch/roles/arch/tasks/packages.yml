@@ -41,4 +41,12 @@
   become: yes
   tags: [packages, yay]
 
-
+- name: AUR | Instalar lista masiva de paquetes desde AUR
+  kewlfft.aur.aur:
+    name: "{{ aur_packages }}"
+    state: present
+    helper: yay
+  become: no
+  vars:
+    ansible_user: "{{ entorno_usuario }}"
+  tags: [packages, aur]
