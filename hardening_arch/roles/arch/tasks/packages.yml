@@ -20,33 +20,34 @@
     state: present
   become: yes
 
-- name: AUR | Clonar repositorio de yay-bin
-  ansible.builtin.git:
-    repo: 'https://aur.archlinux.org/yay-bin.git'
-    dest: /tmp/yay-bin
-    version: master
-    depth: 1
-  become: no
-
-- name: AUR | Compilar yay-bin (Solo generar el paquete como usuario normal)
-  ansible.builtin.command:
-    cmd: makepkg -s -f --noconfirm --needed
-    chdir: /tmp/yay-bin
-  become: no
-  tags: [packages, yay]
-
-- name: AUR | Instalar el paquete compilado de yay (Como root)
-  ansible.builtin.shell:
-    cmd: pacman -U --noconfirm /tmp/yay-bin/yay-bin-*.pkg.tar.zst
-  become: yes
-  tags: [packages, yay]
-
-- name: AUR | Instalar lista masiva de paquetes desde AUR
-  kewlfft.aur.aur:
-    name: "{{ aur_packages }}"
-    state: present
-    use: yay
-  become: no
-  vars:
-    ansible_user: "{{ entorno_usuario }}"
-  tags: [packages, aur]
+#- name: AUR | Clonar repositorio de yay-bin
+#  ansible.builtin.git:
+#    repo: 'https://aur.archlinux.org/yay-bin.git'
+#    dest: /tmp/yay-bin
+#    version: master
+#    depth: 1
+#  become: no
+#
+#- name: AUR | Compilar yay-bin (Solo generar el paquete como usuario normal)
+#  ansible.builtin.command:
+#    cmd: makepkg -s -f --noconfirm --needed
+#    chdir: /tmp/yay-bin
+#  become: no
+#  tags: [packages, yay]
+#
+#- name: AUR | Instalar el paquete compilado de yay (Como root)
+#  ansible.builtin.shell:
+#    cmd: pacman -U --noconfirm /tmp/yay-bin/yay-bin-*.pkg.tar.zst
+#  become: yes
+#  tags: [packages, yay]
+#
+#- name: AUR | Instalar lista masiva de paquetes desde AUR
+#  kewlfft.aur.aur:
+#    name: "{{ aur_packages }}"
+#    state: present
+#    use: yay
+#  become: no
+#  vars:
+#    ansible_user: "{{ entorno_usuario }}"
+#  tags: [packages, aur]
+#

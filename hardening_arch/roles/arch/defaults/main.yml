@@ -126,8 +126,8 @@ pacman_packages:
   - kdeconnect
 
 # Paquetes de AUR
-aur_packages:
-  - python-pywal
+#aur_packages:
+#  - python-pywal
 
 # Aplicaciones Flatpak
 flatpak_packages:
