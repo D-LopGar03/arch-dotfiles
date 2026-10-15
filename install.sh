@@ -68,7 +68,7 @@ sudo pacman -Syu --needed --noconfirm git ansible base-devel go
 
 # 2. yay (commit fijado y verificado)
 install_yay
-install_aur_pkg
+install_aur_pkg python-pywal
 
 # 3. Moverse al directorio del playbook y ejecutar Ansible
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
