@@ -106,6 +106,7 @@ pacman_packages:
   - virtualbox-host-dkms
   - waybar
   - remmina
+  - rofi
   - awww
   - keepassxc  
   - vivaldi
