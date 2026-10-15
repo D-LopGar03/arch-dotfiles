@@ -124,6 +124,9 @@ pacman_packages:
   - gtk3
   - gtk4
   - kdeconnect
+  - ttf-hack-nerd
+  - ttf-nerd-fonts-symbols
+  - ttf-meslo-nerd 
 
 # Paquetes de AUR
 #aur_packages:
