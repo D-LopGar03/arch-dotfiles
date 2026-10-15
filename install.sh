@@ -30,8 +30,11 @@ install_yay() {
   git clone --quiet https://aur.archlinux.org/yay.git "$BUILD_DIR"
   git -C "$BUILD_DIR" checkout --quiet "$YAY_COMMIT"
 
-  echo "${YAY_PKGBUILD_SHA256}  ${BUILD_DIR}/PKGBUILD" | sha256sum -c - \
-    || { echo -e "${RED}[!] El PKGBUILD no coincide con el revisado. Abortando.${NC}"; exit 1; }
+  echo "${YAY_PKGBUILD_SHA256}  ${BUILD_DIR}/PKGBUILD" | sha256sum -c - ||
+    {
+      echo -e "${RED}[!] El PKGBUILD no coincide con el revisado. Abortando.${NC}"
+      exit 1
+    }
 
   (cd "$BUILD_DIR" && makepkg -f --noconfirm)
 
@@ -54,7 +57,7 @@ install_aur_pkg() {
   fi
 
   echo -e "${BLUE}[*] Instalando $pkg desde AUR (revisa el PKGBUILD cuando yay lo pida)...${NC}"
-  yay -S --needed "$pkg"   # sin --noconfirm, a propósito
+  yay -S --needed "$pkg" # sin --noconfirm, a propósito
 }
 
 echo -e "${BLUE}[*] Iniciando el setup de Arch-Dotfiles...${NC}"
@@ -82,3 +85,8 @@ else
 fi
 
 echo -e "${GREEN}[+] ¡Todo listo! Tu sistema ha sido configurado con éxito.${NC}"
+
+echo -e "${GREEN} [+] Se reiniciará el sistema en 5 segundos..."
+
+sleep 5
+reboot
