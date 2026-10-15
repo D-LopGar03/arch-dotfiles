@@ -1,5 +1,13 @@
 ---
 
+- name: Core Dumps | Crear el directorio de configuración de coredump
+  ansible.builtin.file:
+    path: /etc/systemd/coredump.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: Prevenir el almacenamiento de Core Dumps en los servicios de systemd
   ansible.builtin.copy:
     dest: /etc/systemd/coredump.conf.d/disable.conf
@@ -9,4 +17,13 @@
       ProcessSizeMax=0
     owner: root
     group: root
-    mode: '0600' # Cambiado a 0600 y entre comillas para evitar problemas de interpretación octal
+    mode: '0644'
+
+- name: Core Dumps | Limitar core dumps a 0 para todos los usuarios
+  ansible.builtin.lineinfile:
+    path: /etc/security/limits.d/99-coredump.conf
+    line: '* hard core 0'
+    create: true
+    owner: root
+    group: root
+    mode: '0644'
