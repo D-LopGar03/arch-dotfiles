@@ -14,50 +14,50 @@ YAY_PKGBUILD_SHA256="5c1cb01eca47edb4e4665d8734a23bd71d33ba240093ff5a125e0bb2daa
 BUILD_DIR=""
 
 cleanup() {
-	[[ -n "$BUILD_DIR" && -d "$BUILD_DIR" ]] && rm -rf "$BUILD_DIR"
+  [[ -n "$BUILD_DIR" && -d "$BUILD_DIR" ]] && rm -rf "$BUILD_DIR"
 }
 trap cleanup EXIT
 
 install_yay() {
-	if command -v yay >/dev/null 2>&1; then
-		echo -e "${GREEN}[+] yay ya está instalado, se omite.${NC}"
-		return
-	fi
+  if command -v yay >/dev/null 2>&1; then
+    echo -e "${GREEN}[+] yay ya está instalado, se omite.${NC}"
+    return
+  fi
 
-	echo -e "${BLUE}[*] Compilando yay desde fuente (commit fijado)...${NC}"
-	BUILD_DIR="$(mktemp -d /tmp/yay-build.XXXXXX)"
+  echo -e "${BLUE}[*] Compilando yay desde fuente (commit fijado)...${NC}"
+  BUILD_DIR="$(mktemp -d /tmp/yay-build.XXXXXX)"
 
-	git clone --quiet https://aur.archlinux.org/yay.git "$BUILD_DIR"
-	git -C "$BUILD_DIR" checkout --quiet "$YAY_COMMIT"
+  git clone --quiet https://aur.archlinux.org/yay.git "$BUILD_DIR"
+  git -C "$BUILD_DIR" checkout --quiet "$YAY_COMMIT"
 
-	echo "${YAY_PKGBUILD_SHA256}  ${BUILD_DIR}/PKGBUILD" | sha256sum -c - ||
-		{
-			echo -e "${RED}[!] El PKGBUILD no coincide con el revisado. Abortando.${NC}"
-			exit 1
-		}
+  echo "${YAY_PKGBUILD_SHA256}  ${BUILD_DIR}/PKGBUILD" | sha256sum -c - ||
+    {
+      echo -e "${RED}[!] El PKGBUILD no coincide con el revisado. Abortando.${NC}"
+      exit 1
+    }
 
-	(cd "$BUILD_DIR" && makepkg -f --noconfirm)
+  (cd "$BUILD_DIR" && makepkg -f --noconfirm)
 
-	local pkg
-	pkg="$(cd "$BUILD_DIR" && makepkg --packagelist | grep -v -- '-debug-' | head -n1)"
-	sudo pacman -U --noconfirm "$pkg"
+  local pkg
+  pkg="$(cd "$BUILD_DIR" && makepkg --packagelist | grep -v -- '-debug-' | head -n1)"
+  sudo pacman -U --noconfirm "$pkg"
 }
 
 install_aur_pkg() {
-	local pkg="$1"
+  local pkg="$1"
 
-	if pacman -Qi "$pkg" >/dev/null 2>&1; then
-		echo -e "${GREEN}[+] $pkg ya está instalado, se omite.${NC}"
-		return
-	fi
+  if pacman -Qi "$pkg" >/dev/null 2>&1; then
+    echo -e "${GREEN}[+] $pkg ya está instalado, se omite.${NC}"
+    return
+  fi
 
-	if ! yay -Si "$pkg" >/dev/null 2>&1; then
-		echo -e "${RED}[!] $pkg no existe en los repos ni en AUR. Abortando.${NC}"
-		exit 1
-	fi
+  if ! yay -Si "$pkg" >/dev/null 2>&1; then
+    echo -e "${RED}[!] $pkg no existe en los repos ni en AUR. Abortando.${NC}"
+    exit 1
+  fi
 
-	echo -e "${BLUE}[*] Instalando $pkg desde AUR (revisa el PKGBUILD cuando yay lo pida)...${NC}"
-	yay -S --needed "$pkg" # sin --noconfirm, a propósito
+  echo -e "${BLUE}[*] Instalando $pkg desde AUR (revisa el PKGBUILD cuando yay lo pida)...${NC}"
+  yay -S --needed "$pkg" # sin --noconfirm, a propósito
 }
 
 echo -e "${BLUE}[*] Iniciando el setup de Arch-Dotfiles...${NC}"
@@ -76,18 +76,18 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PLAYBOOK_DIR="$SCRIPT_DIR/hardening_arch"
 
 if [ -d "$PLAYBOOK_DIR" ]; then
-	echo -e "${GREEN}[+] Ejecutando el flujo de Ansible...${NC}"
-	cd "$PLAYBOOK_DIR"
-	# Se usa -K para pedir la contraseña de sudo una sola vez al inicio
-	ansible-playbook -K harden_arch.yml
+  echo -e "${GREEN}[+] Ejecutando el flujo de Ansible...${NC}"
+  cd "$PLAYBOOK_DIR"
+  # Se usa -K para pedir la contraseña de sudo una sola vez al inicio
+  ansible-playbook -K harden_arch.yml
 else
-	echo -e "${RED}error: No se encontró la carpeta hardening_arch en $SCRIPT_DIR${NC}"
-	exit 1
+  echo -e "${RED}error: No se encontró la carpeta hardening_arch en $SCRIPT_DIR${NC}"
+  exit 1
 fi
 
 echo -e "${GREEN}[+] ¡Todo listo! Tu sistema ha sido configurado con éxito.${NC}"
 
 echo -e "${GREEN} [+] Se reiniciará el sistema en 5 segundos..."
 
-sleep 5
-reboot
+#sleep 5
+#reboot

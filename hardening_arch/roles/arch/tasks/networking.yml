@@ -58,14 +58,16 @@
     dest: /etc/systemd/resolved.conf.d/secure-dns.conf
     content: |
       [Resolve]
-      # IPs y dominios oficiales de AdGuard DNS (Filtro estándar de anuncios y malware)
-      DNS=94.140.14.14#://adguard-dns.com 94.140.15.15#://adguard-dns.com
-      FallbackDNS=1.1.1.1#cloudflare-dns.com
+      # IPs y hostnames TLS correctos de AdGuard DNS (Filtro estándar)
+      DNS=94.140.14.14
+      FallbackDNS=94.140.15.15
       DNSOverTLS=yes
+
     mode: '0644'
     owner: root
     group: root
   notify: Restart systemd-resolved
+
 
 - name: Red | Enlazar NetworkManager con systemd-resolved
   ansible.builtin.blockinfile:
@@ -76,3 +78,21 @@
       rc-manager=symlink
     marker: "# {mark} ANSIBLE MANAGED BLOCK - NM DNS CONFIG"
   notify: Restart NetworkManager
+
+# ==================== TAREAS AGREGADAS PARA CORREGIR EL ENLACE ====================
+
+- name: Red | Comprobar si /etc/resolv.conf es un enlace simbolico real
+  ansible.builtin.stat:
+    path: /etc/resolv.conf
+  register: resolv_conf_status
+
+- name: Red | Forzar la sustitucion de /etc/resolv.conf por el enlace correcto de systemd-resolved
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: yes
+  when: not resolv_conf_status.stat.islnk | default(false) or resolv_conf_status.stat.lnk_source != '/run/systemd/resolve/stub-resolv.conf'
+  notify: 
+    - Restart systemd-resolved
+    - Restart NetworkManager

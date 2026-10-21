@@ -135,6 +135,8 @@ pacman_packages:
   - hypridle
   - tlp
   - nvim
+  - hyprshot
+  - noto-fonts-emoji
 
 
 # Paquetes de AUR

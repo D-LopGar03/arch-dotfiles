@@ -14,6 +14,18 @@
     - scripts
   tags: [dotfiles, limpieza]
 
+- name: Descargar wayves desde GitHub
+  ansible.builtin.git:
+    repo: 'https://github.com/jvc84/wayves'
+    dest: /home/{{ entorno_usuario }}/arch-dotfiles/scripts/wayves 
+    version: main
+    update: yes
+    recursive: yes
+    force: yes
+  become: yes
+  become_user: "{{ entorno_usuario }}"
+  tags: [dotfiles, copia]
+
 - name: Copiar carpetas de configuración a .config de forma definitiva
   ansible.builtin.copy:
     src: "/home/{{ entorno_usuario }}/arch-dotfiles/{{ item }}"
@@ -34,16 +46,23 @@
   notify: Recargar Hyprland 
   tags: [dotfiles, copia]
 
+- name: Awww | Buscar todos los archivos de imagen en las subcarpetas de wallpapers
+  ansible.builtin.find:
+    paths:
+      - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/anime"
+      - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/cartoons"
+      - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/gifs"
+      - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/pixelarts"
+      - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/landscape"
+      - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/retro-gaming"
 
-- name: Descargar wayves desde GitHub
-  ansible.builtin.git:
-    repo: 'https://github.com/jvc84/wayves'
-    dest: /home/{{ entorno_usuario }}/arch-dotfiles/scripts/wayves 
-    version: main
-    update: yes
-    recursive: yes
-    force: yes
-  become: no
+
+    # Busca extensiones comunes de imágenes y GIFs (puedes añadir más si las usas)
+    patterns: ['*.jpg', '*.jpeg', '*.png', '*.gif', '*.webp']
+    file_type: file
+    recurse: yes
+  register: lista_fondos
+  tags: [dotfiles, awww, wallpaper]
 
 - name: Pywal | Asegurar el directorio de caché de Pywal para el usuario
   ansible.builtin.file:
@@ -54,32 +73,42 @@
     mode: '0700'
   tags: [dotfiles, pywal]
 
-- name: Pywal | Pregenerar la caché de la paleta de colores para el GIF con awww
+- name: Pywal | Pregenerar la caché de la paleta de colores para el fondo aleatorio
   ansible.builtin.command:
-    cmd: "wal -i /home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/gifs/4167709.gif -n"
-  become: no  
+    cmd: "wal -i {{ item }} -n"
+  # Selecciona un archivo aleatorio mapeando la propiedad 'path' del resultado de find
+  loop:
+    - "{{ lista_fondos.files | map(attribute='path') | list | random }}"
+  register: fondo_seleccionado
+  become: yes  
+  become_user: "{{ entorno_usuario }}"
   changed_when: true
   failed_when: false 
   tags: [dotfiles, pywal]
 
+- name: Awww | Obtener el UID numérico de {{ entorno_usuario }}
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ entorno_usuario }}"
+  tags: [dotfiles, awww, wallpaper]
+
 - name: Awww | Detectar el socket de Wayland activo
   ansible.builtin.shell: |
-    ls -1 /run/user/{{ ansible_facts['effective_user_id'] }}/wayland-* | head -n 1 | xargs basename
+    ls -1 /run/user/{{ ansible_facts['getent_passwd'][entorno_usuario][1] }}/wayland-* 2>/dev/null | head -n 1 | xargs basename
   register: socket_wayland_detectado
   changed_when: false
   failed_when: false
+  tags: [dotfiles, awww, wallpaper]
 
-- name: Awww | Establecer el GIF animado como fondo de pantalla activo
+- name: Awww | Establecer el fondo de pantalla aleatorio activo
   ansible.builtin.command:
-    cmd: "awww img /home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/gifs/4167709.gif"
+    cmd: "awww img {{ fondo_seleccionado.results[0].item }}"
   environment:
-    WAYLAND_DISPLAY: "{{ socket_wayland_detectado.stdout | default('wayland-1') }}"
-    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['effective_user_id'] }}"
-    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['effective_user_id'] }}/bus"
+    WAYLAND_DISPLAY: "{{ socket_wayland_detectado.stdout | default('wayland-0') }}"
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][entorno_usuario][1] }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['getent_passwd'][entorno_usuario][1] }}/bus"
   become: yes
   become_user: "{{ entorno_usuario }}"
   changed_when: true
   failed_when: false 
   tags: [dotfiles, awww, wallpaper]
-
-
