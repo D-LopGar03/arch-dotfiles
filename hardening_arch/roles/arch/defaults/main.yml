@@ -143,6 +143,7 @@ pacman_packages:
   - libreoffice-fresh
   - qt6ct
   - breeze
+  - kvantum
 
 # Paquetes de AUR
 #aur_packages:
