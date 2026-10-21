@@ -149,3 +149,23 @@ flatpak_packages:
   - com.brave.Browser
   - com.github.tchx84.Flatseal
 
+
+# Varibables TLP 
+# 1. Configuraciones de CPU y rendimiento comunes
+tlp_generic_settings:
+  - { key: 'CPU_BOOST_ON_BAT', value: '0' }
+  - { key: 'CPU_HWP_DYN_BOOST_ON_BAT', value: '0' }
+  - { key: 'CPU_SCALING_GOVERNOR_ON_BAT', value: 'powersave' }
+  - { key: 'CPU_ENERGY_PERF_POLICY_ON_BAT', value: 'balance_power' }
+
+# 2. Selección dinámica usando la sintaxis moderna de ansible_facts y filtro JSON
+tlp_battery_thresholds: >-
+  {% if 'ASUS' in (ansible_facts['chassis_vendor'] | default('')) or 'ASUSTeK' in (ansible_facts['chassis_vendor'] | default('')) %}
+    [{"key": "STOP_CHARGE_THRESH_BAT0", "value": "80"}]
+  {% elif 'Lenovo' in (ansible_facts['chassis_vendor'] | default('')) or 'ThinkPad' in (ansible_facts['chassis_vendor'] | default('')) %}
+    [{"key": "START_CHARGE_THRESH_BAT0", "value": "75"}, {"key": "STOP_CHARGE_THRESH_BAT0", "value": "80"}]
+  {% elif 'Huawei' in (ansible_facts['chassis_vendor'] | default('')) %}
+    [{"key": "STOP_CHARGE_THRESH_BAT0", "value": "80"}]
+  {% else %}
+    []
+  {% endif %}
