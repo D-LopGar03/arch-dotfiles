@@ -26,25 +26,44 @@
   tags: [battery, power]
 
 - name: Batería | Ajustar la configuración de TLP para el rendimiento de Hyprland
-  # Evita tirones de FPS en Hyprland ajustando las frecuencias del procesador y GPU
+  # Optimiza el procesador, GPU y configura umbrales de batería dinámicos por marca
   ansible.builtin.lineinfile:
     path: /etc/tlp.conf
     regexp: "^#?{{ item.key }}="
     line: "{{ item.key }}=\"{{ item.value }}\""
-    create: yes # Crea el archivo si pacman lo instaló con extensión alternativa (.default)
+    create: yes
     mode: '0644'
-  loop:
-    # Fuerza el ahorro en batería desactivando el Turbo Boost de la CPU
-    - { key: 'CPU_BOOST_ON_BAT', value: '0' }
-    - { key: 'CPU_HWP_DYN_BOOST_ON_BAT', value: '0' }
-    # Gobernadores de energía equilibrados para evitar lag gráfico en Wayland
-    - { key: 'CPU_SCALING_GOVERNOR_ON_BAT', value: 'powersave' }
-    - { key: 'CPU_ENERGY_PERF_POLICY_ON_BAT', value: 'balance_power' }
-    # Umbrales de carga para cuidar la vida útil de la batería (Ajusta según tu marca de laptop)
-    - { key: 'START_CHARGE_THRESH_BAT0', value: '75' }
-    - { key: 'STOP_CHARGE_THRESH_BAT0', value: '80' }
+  loop: "{{ tlp_generic_settings + tlp_battery_thresholds }}"
   register: tlp_config
   tags: [battery, power]
+  vars:
+    # 1. Configuraciones de CPU y rendimiento comunes para todos los portátiles
+    tlp_generic_settings:
+      - { key: 'CPU_BOOST_ON_BAT', value: '0' }
+      - { key: 'CPU_HWP_DYN_BOOST_ON_BAT', value: '0' }
+      - { key: 'CPU_SCALING_GOVERNOR_ON_BAT', value: 'powersave' }
+      - { key: 'CPU_ENERGY_PERF_POLICY_ON_BAT', value: 'balance_power' }
+
+    # 2. Selección dinámica de umbrales según el fabricante detectado por Ansible
+    tlp_battery_thresholds: >-
+      {{
+        if ansible_chassis_vendor is search('ASUSTeK', ignorecase=true) or ansible_chassis_vendor is search('ASUS', ignorecase=true) then
+          [
+            { key: 'STOP_CHARGE_THRESH_BAT0', value: '80' }
+          ]
+        elif ansible_chassis_vendor is search('Lenovo', ignorecase=true) or ansible_chassis_vendor is search('ThinkPad', ignorecase=true) then
+          [
+            { key: 'START_CHARGE_THRESH_BAT0', value: '75' },
+            { key: 'STOP_CHARGE_THRESH_BAT0', value: '80' }
+          ]
+        elif ansible_chassis_vendor is search('Huawei', ignorecase=true) then
+          [
+            { key: 'STOP_CHARGE_THRESH_BAT0', value: '80' }
+          ]
+        else
+          []
+      }}
+
 
 - name: Batería | Iniciar y asegurar el servicio activo de TLP
   ansible.builtin.systemd_service:
