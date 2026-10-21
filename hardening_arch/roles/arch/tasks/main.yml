@@ -3,10 +3,6 @@
 # Playbook Principal de Tareas (tasks/main.yml) - Hardening Personal
 # =====================================================================
 
-- name: Kernel | Aplicar parametros sysctl, modulejail y bloquear modulos
-  ansible.builtin.include_tasks: kernel.yml
-  tags: [kernel, modulos]
-
 - name: Instalar paquetes necesarios (Pacman, AUR, Flatpak)
   ansible.builtin.include_tasks: packages.yml
 
@@ -17,13 +13,17 @@
   ansible.builtin.include_tasks: permissions.yml
   tags: [permisos, cron, home, hyprland]
 
+- name: Firewall | Configurar politicas UFW, KVM y la IP de KDE Connect
+  ansible.builtin.include_tasks: firewall.yml
+  tags: [ufw, firewall, kde-connect]
+
 - name: Almacenamiento | Endurecer puntos de montaje (/tmp con systemd y /dev/shm)
   ansible.builtin.include_tasks: mounts.yml
   tags: [mounts, seguridad]
 
-- name: Firewall | Configurar politicas UFW, KVM y la IP de KDE Connect
-  ansible.builtin.include_tasks: firewall.yml
-  tags: [ufw, firewall, kde-connect]
+- name: Kernel | Aplicar parametros sysctl, modulejail y bloquear modulos
+  ansible.builtin.include_tasks: kernel.yml
+  tags: [kernel, modulos]
 
 - name: Red | Configurar systemd-resolved con DNS de AdGuard y apagar de raiz IPv6
   ansible.builtin.include_tasks: networking.yml

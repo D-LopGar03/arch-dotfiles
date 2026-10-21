@@ -89,5 +89,5 @@ echo -e "${GREEN}[+] ¡Todo listo! Tu sistema ha sido configurado con éxito.${N
 
 echo -e "${GREEN} [+] Se reiniciará el sistema en 5 segundos..."
 
-sleep 5
-reboot
+#sleep 5
+#reboot

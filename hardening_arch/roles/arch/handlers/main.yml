@@ -21,6 +21,11 @@
   ansible.builtin.command: sysctl --system
   changed_when: true
 
+- name: Iniciar servicio TLP
+  ansible.builtin.systemd_service:
+    name: tlp.service
+    state: started
+
 - name: Reiniciar servicio TLP
   ansible.builtin.systemd_service:
     name: tlp.service

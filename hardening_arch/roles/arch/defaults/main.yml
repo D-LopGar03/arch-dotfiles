@@ -48,7 +48,7 @@ modulos_bloqueados:
 # Modulejail
 # =====================================================================
 
-modulejail_profile: "conservative"  # Opciones: minimal, conservative, desktop, firewall
+modulejail_profile: "firewall"  # Opciones: minimal, conservative, desktop, firewall
 
 
 # =====================================================================
@@ -75,7 +75,7 @@ flatpak_browsers:
 #========================================
 
 # Detecta automáticamente al usuario real que ejecuta el script, sin importar su nombre
-entorno_usuario: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+entorno_usuario: "{{ ansible_facts['env']['SUDO_USER'] | default(ansible_facts['user_id']) }}"
 
 # El HOME también debe ser dinámico basándose en ese usuario
 entorno_home: "/home/{{ entorno_usuario }}"
@@ -128,6 +128,13 @@ pacman_packages:
   - ttf-hack-nerd
   - ttf-nerd-fonts-symbols
   - ttf-meslo-nerd 
+  - sof-firmware
+  - alsa-ucm-conf
+  - alsa-card-profiles
+  - alsa-utils
+  - hypridle
+  - tlp
+
 
 # Paquetes de AUR
 #aur_packages:

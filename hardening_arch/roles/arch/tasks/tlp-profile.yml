@@ -9,6 +9,7 @@
       - tlp
       - hypridle # Gestor oficial de inactividad para Hyprland
     state: present
+  notify: Iniciar servicio TLP  
   tags: [battery, power]
 
 - name: Batería | Desactivar servicios conflictivos (Recomendado por TLP)
@@ -30,6 +31,8 @@
     path: /etc/tlp.conf
     regexp: "^#?{{ item.key }}="
     line: "{{ item.key }}=\"{{ item.value }}\""
+    create: yes # Crea el archivo si pacman lo instaló con extensión alternativa (.default)
+    mode: '0644'
   loop:
     # Fuerza el ahorro en batería desactivando el Turbo Boost de la CPU
     - { key: 'CPU_BOOST_ON_BAT', value: '0' }

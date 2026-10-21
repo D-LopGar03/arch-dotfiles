@@ -62,13 +62,24 @@
   failed_when: false 
   tags: [dotfiles, pywal]
 
+- name: Awww | Detectar el socket de Wayland activo
+  ansible.builtin.shell: |
+    ls -1 /run/user/{{ ansible_facts['effective_user_id'] }}/wayland-* | head -n 1 | xargs basename
+  register: socket_wayland_detectado
+  changed_when: false
+  failed_when: false
+
 - name: Awww | Establecer el GIF animado como fondo de pantalla activo
   ansible.builtin.command:
-    cmd: "awww img /home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/gifs/img.gif"
+    cmd: "awww img /home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/gifs/4167709.gif"
   environment:
-    WAYLAND_DISPLAY: "wayland-0"
-    XDG_RUNTIME_DIR: "/run/user/1000" 
-  become: no
+    WAYLAND_DISPLAY: "{{ socket_wayland_detectado.stdout | default('wayland-1') }}"
+    XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['effective_user_id'] }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['effective_user_id'] }}/bus"
+  become: yes
+  become_user: "{{ entorno_usuario }}"
   changed_when: true
   failed_when: false 
   tags: [dotfiles, awww, wallpaper]
+
+

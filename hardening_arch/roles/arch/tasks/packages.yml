@@ -20,6 +20,10 @@
     state: present
   become: yes
 
+
+
+
+
 #- name: AUR | Clonar repositorio de yay-bin
 #  ansible.builtin.git:
 #    repo: 'https://aur.archlinux.org/yay-bin.git'
