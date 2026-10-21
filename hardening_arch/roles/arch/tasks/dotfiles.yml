@@ -52,7 +52,7 @@
       - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/anime"
       - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/cartoons"
       - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/gifs"
-      - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/pixelarts"
+      - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/pixel-arts"
       - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/landscape"
       - "/home/{{ entorno_usuario }}/arch-dotfiles/wallpapers/retro-gaming"
 
