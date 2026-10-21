@@ -134,6 +134,7 @@ pacman_packages:
   - alsa-utils
   - hypridle
   - tlp
+  - nvim
 
 
 # Paquetes de AUR
