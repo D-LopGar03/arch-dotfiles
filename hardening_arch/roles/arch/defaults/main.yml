@@ -138,6 +138,11 @@ pacman_packages:
   - hyprshot
   - noto-fonts-emoji
   - rsync
+  - kde-cli-tools
+  - archlinux-xdg-menu
+  - libreoffice-fresh
+  - qt6ct
+  - breeze
 
 # Paquetes de AUR
 #aur_packages:
