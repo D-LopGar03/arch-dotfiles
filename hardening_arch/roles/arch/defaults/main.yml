@@ -137,7 +137,7 @@ pacman_packages:
   - nvim
   - hyprshot
   - noto-fonts-emoji
-
+  - rsync
 
 # Paquetes de AUR
 #aur_packages:
