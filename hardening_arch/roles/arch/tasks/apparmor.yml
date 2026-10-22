@@ -96,3 +96,42 @@
   changed_when: false
   ignore_errors: true
   tags: [flatpak, seguridad]
+
+# --- MITIGACIÓN PARA EL INPUT LAG EN HYPRLAND Y ACCESOS CRÍTICOS ---
+
+- name: Flatpak | Otorgar sockets de comunicación y memoria compartida (Corrige retraso de texto)
+  ansible.builtin.command: "flatpak override {{ item }} --socket=wayland --socket=fallback-x11 --share=ipc"
+  loop: "{{ flatpak_browsers }}"
+  changed_when: false
+  ignore_errors: true
+  tags: [flatpak, seguridad]
+
+- name: Flatpak | Forzar el entorno Ozone de Wayland en Brave Flatpak
+  ansible.builtin.command: >
+    flatpak override {{ item }} 
+    --env=ELECTRON_OZONE_PLATFORM_HINT=auto 
+    --env=DISABLE_WAYLAND_PROXY=1
+  loop: "{{ flatpak_browsers }}"
+  changed_when: false
+  ignore_errors: true
+  tags: [flatpak, seguridad]
+
+- name: Flatpak | Asegurar la existencia del directorio de configuración persistente para flags
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.var/app/{{ item }}/config"
+    state: directory
+    mode: '0755'
+  loop: "{{ flatpak_browsers }}"
+  tags: [flatpak, seguridad]
+
+- name: Flatpak | Inyectar flags de rendimiento y seguridad internos del motor Chromium (Evita AppArmor bottlenecks)
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_facts['env']['HOME'] }}/.var/app/{{ nested_item.0 }}/config/brave-flags.conf"
+    line: "{{ nested_item.1 }}"
+    create: true
+    mode: '0644'
+  loop: "{{ lookup('nested', flatpak_browsers, ['--password-store=basic', '--ozone-platform-hint=auto', '--ozone-platform=wayland']) }}"
+  loop_control:
+    loop_var: nested_item
+  tags: [flatpak, seguridad]
+
