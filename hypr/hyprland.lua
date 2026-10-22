@@ -93,19 +93,6 @@ hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", 1)
 
 hl.env("QT_WAYLAND_DISABLE_WINDOW_DECORATION", 1)
 
---env = QT_QPA_PLUGIN, xcb
-
--- ANDROID
-
-hl.env("QT_QPA_PLATFORM", "xcb")
-
-hl.env("ANDROID_AVD_HOME", "/home/ay4t0/.config/.android/avd")
-
-hl.env("_JAVA_AWT_WM_NONREPARENTING", 1)
-
-hl.env("ANDROID_HOME", "/home/ay4t0/Android/Sdk")
-
-hl.env("ANDROID_SDK_ROOT", "/home/ay4t0/Android/Sdk")
 
 -- ── Cursor Settings ─────────────────────
 

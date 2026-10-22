@@ -7,9 +7,9 @@
   community.general.pacman:
     name:
       - tlp
+      - tlp-rdw  # Necesario para gestionar radio ya que bloqueas systemd-rfkill
       - hypridle # Gestor oficial de inactividad para Hyprland
     state: present
-  notify: Iniciar servicio TLP  
   tags: [battery, power]
 
 - name: Batería | Desactivar servicios conflictivos (Recomendado por TLP)
@@ -20,7 +20,7 @@
     masked: "{{ item.mask }}"
   loop:
     - { name: 'power-profiles-daemon.service', mask: true } # Conflicto directo con TLP
-    - { name: 'systemd-rfkill.service', mask: true }        # TLP maneja mejor los estados de radio (Wi-Fi/BT)
+    - { name: 'systemd-rfkill.service', mask: true }        # Evita que systemd pise el control de RF
     - { name: 'systemd-rfkill.socket', mask: true }
   ignore_errors: true
   tags: [battery, power]
@@ -32,32 +32,21 @@
     line: "{{ item.key }}=\"{{ item.value }}\""
     create: yes
     mode: '0644'
-  loop: "{{ tlp_generic_settings + (tlp_battery_thresholds | from_json) }}"
+  # Combinamos la lista estática con la dinámica procesada como YAML nativo
+  loop: "{{ tlp_generic_settings + (tlp_battery_thresholds | from_yaml) }}"
   register: tlp_config
   tags: [battery, power]
 
-
 - name: Batería | Iniciar y asegurar el servicio activo de TLP
   ansible.builtin.systemd_service:
-    name: tlp.service
+    name: "{{ item }}"
     enabled: true
     state: started
-  notify: Reiniciar servicio TLP
+  loop:
+    - tlp.service
   tags: [battery, power]
 
-
-- name: Batería | Crear regla de UDEV para limitar la carga al 80%
-  when: "'ASUS' in (ansible_facts['chassis_vendor'] | default('')) or 'ASUSTeK' in (ansible_facts['chassis_vendor'] | default(''))"
-  ansible.builtin.copy:
-    dest: /etc/udev/rules.d/99-battery.rules
-    mode: '0644'
-    content: |
-      # Regla universal para dotfiles: Limita la carga en portátiles
-      SUBSYSTEM=="power_supply", KERNEL=="BAT0", ATTR{charge_control_end_threshold}="80"
-  register: udev_rules
-  tags: [battery, power]
-
-- name: Batería ASUS | Recargar reglas de UDEV si hubo cambios
-  when: udev_rules.changed
-  ansible.builtin.shell: udevadm control --reload-rules && udevadm trigger
+- name: Batería | Aplicar cambios de configuración de TLP inmediatamente
+  when: tlp_config.changed
+  ansible.builtin.command: tlp start
   tags: [battery, power]
