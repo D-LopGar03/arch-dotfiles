@@ -94,7 +94,7 @@ Para iniciar todo el aprovisionamiento del sistema, ejecuta el siguiente comando
 ```bash
 sudo pacman -S git
 git clone https://github.com/D-LopGar03/arch-dotfiles.git
-bash install.sh
+bash arch-dotfiles/install.sh
 ```
 
 ### 🔍 ¿Cómo funciona internamente `install.sh`?
