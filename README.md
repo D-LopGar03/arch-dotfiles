@@ -177,3 +177,4 @@ Este entorno utiliza y se apoya en valiosas soluciones de la comunidad de códig
 
 *   **[wayves](https://github.com)** de *jvc84* ── Una excelente utilidad y módulo de animaciones que permite integrar **CAVA** e indicadores dinámicos en Waybar basados en el estado del reproductor multimedia (`MPRIS`/`playerctl`).
 *   **[LazyVim Starter](https://github.com/LazyVim/starter)** de *LazyVim* ── La plantilla base y distribución modular para **Neovim** (`nvim`), utilizada como pilar fundamental para estructurar un entorno de desarrollo rápido, extensible y eficiente dentro de la terminal.
+*   **[ModuleJail](https://github.com/jnuyens/modulejail)** de *Jasper Nuyens* ── Concepto base y herramienta esencial para la reducción proactiva de la superficie de ataque del kernel mediante políticas de listas negras automatizadas en *modprobe.d*.
