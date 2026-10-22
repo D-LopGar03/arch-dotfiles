@@ -4,6 +4,15 @@ Este repositorio contiene la configuración automatizada y los archivos de perso
 
 La configuración del compositor se gestiona mediante una capa de abstracción en Lua (`hl.*`) que optimiza la carga de variables de entorno, atajos de teclado y la gestión avanzada de monitores.
 
+
+## 📸 Galería Visual (Showcase)
+
+Aquí puedes ver el entorno en acción con la configuración de transparencias, esquemas oscuros y notificaciones dinámicas de SwayNC:
+
+| Entorno Limpio (Clean) | Entorno de Trabajo (Busy) |
+| :---: | :---: |
+| ![Entorno Limpio](./assets/clean.png) | ![Entorno con Ventanas](./assets/busy.png) |
+
 ---
 
 ## 🛠️ Cómo Funciona el Entorno
