@@ -130,26 +130,35 @@ Ciertas aplicaciones críticas se ejecutan de forma aislada para mayor seguridad
 *   `com.vscodium.codium` (Editor de código Open Source libre de telemetría).
 *   `com.github.tchx84.Flatseal` (Utilidad para gestionar y recortar permisos de las apps Flatpak).
 
----
-
 ## ⌨️ Atajos de Teclado Clave (Keybindings)
 
 El modificador principal está configurado en la tecla **`ALT`** (`mainMod`) y el secundario en la tecla **`SUPER/META`** (`altMod`).
 
-*   `ALT + Q` ── Abrir Terminal (`kitty`)
-*   `ALT + B` ── Abrir Navegador (`Brave Browser`)
-*   `ALT + E` ── Abrir Gestor de Archivos (`dolphin`)
-*   `ALT + R` ── Lanzar Menú de Aplicaciones (`rofi`)
-*   `ALT + C` ── Cerrar ventana enfocada
-*   `SUPER + F` ── Selector de fondos de pantalla (Ejecuta el script de control para `awww` en `~/.config/scripts/change_wallpaper.sh`)
-*   `ALT + SHIFT + L` ── Bloquear Pantalla (`hyprlock`)
-*   `ALT + SHIFT + S` ── Captura de pantalla de una región (`hyprshot`)
-*   `SUPER + R` ── Reiniciar el sistema
-*   `SUPER + A` ── Apagar el equipo
+### 📑 Gestión de Ventanas y Espacios de Trabajo Dinámicos
+*   `ALT + [0-9]` ── Cambiar instantáneamente al espacio de trabajo asignado (1 al 10).
+*   `ALT + SHIFT + [0-9]` ── Desplazar la ventana enfocada hacia el espacio de trabajo seleccionado.
+*   `SUPER + Izquierda / Derecha` ── Navegar cíclicamente un espacio de trabajo hacia adelante (`e+1`) o hacia atrás (`e-1`).
+*   `ALT + Flechas de Dirección` ── Alternar el foco del cursor entre ventanas adyacentes (Izquierda, Derecha, Arriba, Abajo).
+*   `ALT + SHIFT + Flechas de Dirección` ── Mover físicamente la ventana activa dentro del mosaico actual.
+*   `ALT + S` ── Mostrar/ocultar el espacio de trabajo especial (*Scratchpad* flotante).
+*   `ALT + SHIFT + P` ── Enviar la ventana actual al espacio de trabajo especial.
+*   `ALT + V` ── Alternar el estado de la ventana entre mosaico (*tiling*) y flotante.
+
+### 🚀 Lanzadores de Aplicaciones y Sistema
+*   `ALT + Q` ── Abrir Terminal (`kitty`).
+*   `ALT + B` ── Abrir Navegador Web (`Brave Browser`).
+*   `ALT + E` ── Abrir Gestor de Archivos (`dolphin`).
+*   `ALT + R` ── Lanzar Menú de Aplicaciones Dinámico (`rofi`).
+*   `ALT + C` ── Cerrar la ventana enfocada actual.
+*   `SUPER + F` ── Selector de fondos de pantalla (Ejecuta el script de control para `awww` en `~/.config/scripts/change_wallpaper.sh`).
+*   `ALT + SHIFT + L` ── Bloquear de forma segura la sesión activa (`hyprlock`).
+*   `ALT + SHIFT + S` ── Captura de pantalla de una región seleccionada (`hyprshot`).
+*   `SUPER + R` ── Reiniciar el sistema operativo de forma limpia.
+*   `SUPER + A` ── Apagar el equipo por completo.
 
 ### 🎵 Control de Medios & Micrófono
 *   `F9` ── Alternar silencio del micrófono. Llama al script `~/.config/scripts/toggle-mic.sh`, el cual extrae dinámicamente el ID del dispositivo de audio digital desde `wpctl status` y alterna su estado (*toggle mute*).
-*   `F10` ── Retroceder canción (`playerctl previous`)
-*   `F11` ── Pausar / Reproducir canción (`playerctl play-pause`)
-*   `F12` ── Siguiente canción (`playerctl next`)
+*   `F10` ── Retroceder pista musical (`playerctl previous`).
+*   `F11` ── Pausar / Reproducir pista musical (`playerctl play-pause`).
+*   `F12` ── Avanzar a la siguiente pista musical (`playerctl next`).
 
