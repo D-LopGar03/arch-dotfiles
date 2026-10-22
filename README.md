@@ -9,9 +9,13 @@ La configuración del compositor se gestiona mediante una capa de abstracción e
 
 Aquí puedes ver el entorno en acción con la configuración de transparencias, esquemas oscuros y notificaciones dinámicas de SwayNC:
 
-| Entorno Limpio (Clean) | Entorno de Trabajo (Busy) |
-| :---: | :---: |
-| ![Entorno Limpio](./assets/clean.png) | ![Entorno con Ventanas](./assets/busy.png) |
+| Entorno Limpio (Clean) | 
+| :---: | 
+| ![Entorno Limpio](./assets/clean.png) | 
+
+| Entorno de Trabajo (Busy) |
+:---: |
+| ![Entorno con Ventanas](./assets/busy.png) |
 
 ---
 
