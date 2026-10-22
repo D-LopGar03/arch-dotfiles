@@ -25,7 +25,7 @@
     "custom/launcher": {
         "format": "",
         "tooltip": false,
-        "on-click": "/home/ay4t0/.config/scripts/./waypaper_change_wallpaper.sh"
+        "on-click": "~/.config/scripts/./change_wallpaper.sh"
     },
     "hyprland/workspaces": {
         "format": "{icon}",
