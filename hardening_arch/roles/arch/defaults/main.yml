@@ -96,6 +96,7 @@ dotfiles_config_links:
   - "waybar"
   - "wallpapers"
   - "dolphinrc"
+  - "nvim"
 
 # Paquetes oficiales de Pacman
 pacman_packages:
