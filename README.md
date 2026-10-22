@@ -19,6 +19,19 @@ Aquí puedes ver el entorno en acción con la configuración de transparencias, 
 
 ---
 
+---
+
+## 🎯 ¿Por qué usar estos Dotfiles? (Casos de Uso)
+
+A diferencia de las configuraciones tradicionales que solo se enfocan en la estética (*rice*), este repositorio fue diseñado bajo un enfoque de **producción, portabilidad y seguridad**. Es ideal para ti si buscas:
+
+*   **🔒 Un entorno seguro desde el primer día (Hardening Out-of-the-Box):** No tienes que configurar manualmente políticas complejas de seguridad. El sistema implementa aislamiento de memoria compartida, restricciones estrictas de permisos (`UMASK 027`) y un bloqueo proactivo de módulos vulnerables del kernel emulando *ModuleJail*.
+*   **🔋 Máxima autonomía en Laptops:** Gracias a la automatización con Ansible y TLP, el sistema detecta dinámicamente si estás en una laptop ASUS, Lenovo o Huawei y calibra los umbrales de carga para proteger la vida útil de tu batería, además de exprimir los minutos de autonomía suspendiendo hilos del CPU innecesarios cuando estás desconectado.
+*   **🚀 Instalación en un solo comando:** Olvídate de pasar horas copiando archivos de configuración, instalando fuentes rotas o arreglando temas de Qt/GTK que no combinan. El script `install.sh` se encarga de compilar dependencias de forma segura (verificando hashes SHA-256) y Ansible orquesta todo el sistema limpiamente.
+*   **🎮 Fluidez y Minimalismo:** Basado en Hyprland, obtienes animaciones aceleradas por hardware, espacios de trabajo dinámicos que no consumen RAM si están vacíos, y un control multimedia automatizado con notificaciones nativas en SwayNC.
+
+---
+
 ## 🛠️ Cómo Funciona el Entorno
 
 El sistema operativo inicializa los servicios esenciales y levanta el servidor gráfico utilizando las siguientes directrices:
