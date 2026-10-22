@@ -92,6 +92,8 @@ El repositorio incluye un script de automatización completo encargado de prepar
 Para iniciar todo el aprovisionamiento del sistema, ejecuta el siguiente comando en la terminal:
 
 ```bash
+sudo pacman -S git
+git clone https://github.com/D-LopGar03/arch-dotfiles.git
 bash install.sh
 ```
 
@@ -166,3 +168,12 @@ El modificador principal está configurado en la tecla **`ALT`** (`mainMod`) y e
 *   `F11` ── Pausar / Reproducir pista musical (`playerctl play-pause`).
 *   `F12` ── Avanzar a la siguiente pista musical (`playerctl next`).
 
+
+---
+
+## 🤝 Créditos y Agradecimientos
+
+Este entorno utiliza y se apoya en valiosas soluciones de la comunidad de código abierto. Un agradecimiento especial a:
+
+*   **[wayves](https://github.com)** de *jvc84* ── Una excelente utilidad y módulo de animaciones que permite integrar **CAVA** e indicadores dinámicos en Waybar basados en el estado del reproductor multimedia (`MPRIS`/`playerctl`).
+*   **[LazyVim Starter](https://github.com/LazyVim/starter)** de *LazyVim* ── La plantilla base y distribución modular para **Neovim** (`nvim`), utilizada como pilar fundamental para estructurar un entorno de desarrollo rápido, extensible y eficiente dentro de la terminal.
