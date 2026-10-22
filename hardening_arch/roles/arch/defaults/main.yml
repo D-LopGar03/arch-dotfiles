@@ -145,10 +145,6 @@ pacman_packages:
   - breeze
   - kvantum
 
-# Paquetes de AUR
-#aur_packages:
-#  - python-pywal
-
 # Aplicaciones Flatpak
 flatpak_packages:
   - com.vscodium.codium
