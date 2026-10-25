@@ -7,7 +7,7 @@ DIR=$(find -L "$BASE_DIR" -mindepth 1 -maxdepth 1 -type d | sed "s|$BASE_DIR/||"
 [ -z "$DIR" ] && exit 0
 
 # Construir lista de imágenes con opción de volver
-IMAGES=$(find -L "$BASE_DIR/$DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.gif" \))
+IMAGES=$(find -L "$BASE_DIR/$DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.jpeg" -o -iname "*.webp" \))
 
 CHOICE=$(
   (
@@ -56,5 +56,5 @@ IMG=$(find -L "$BASE_DIR/$DIR" -type f -iname "$CHOICE" | head -n1)
 [ -z "$IMG" ] && exit 1
 
 # Aplicar fondo
-awww img "$IMG" --transition-type grow --transition-duration 2 --filter Nearest --resize stretch
+awww img "$IMG" --transition-type wave --transition-angle 180 --transition-duration 1.5 --filter Nearest --resize stretch
 wal -n -s -i "$IMG"
