@@ -155,7 +155,8 @@ pacman_packages:
   - nwg-look
   - kvantum-theme-materia
   - gsmartcontrol
-
+  - udiskie
+  
 # Aplicaciones Flatpak
 flatpak_packages:
   - com.vscodium.codium
