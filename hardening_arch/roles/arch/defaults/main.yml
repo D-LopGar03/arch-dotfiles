@@ -169,6 +169,10 @@ kernel_storage_whitelist:
   - exfat
   - ext4
   - vfat 
+  - vboxdrv
+  - vboxnetflt
+  - vboxnetadp
+  - vboxpci
   
 
 # Variables TLP 
