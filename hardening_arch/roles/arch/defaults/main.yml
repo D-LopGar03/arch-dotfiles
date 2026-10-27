@@ -87,7 +87,7 @@ entorno_home: "/home/{{ entorno_usuario }}"
 
 dotfiles_repo_dir: "{{ playbook_dir }}/.."
 
-dotfiles_config_links:
+dotfiles_config:
   - "hypr"
   - "kitty"
   - "ranger"
@@ -97,6 +97,10 @@ dotfiles_config_links:
   - "wallpapers"
   - "dolphinrc"
   - "nvim"
+  - "nwg-look"
+  - "gtk-3.0"
+  - "gtk-4.0"
+  - "Kvantum"
 
 # Paquetes oficiales de Pacman
 pacman_packages:
@@ -147,6 +151,10 @@ pacman_packages:
   - kvantum
   - docker
   - docker-compose
+  - exfatprogs
+  - nwg-look
+  - kvantum-theme-materia
+  - gsmartcontrol
 
 # Aplicaciones Flatpak
 flatpak_packages:
@@ -154,6 +162,13 @@ flatpak_packages:
   - com.brave.Browser
   - com.github.tchx84.Flatseal
 
+
+# Módulos de almacenamiento autorizados que se cargarán en el arranque
+kernel_storage_whitelist:
+  - exfat
+  - ext4
+  - vfat 
+  
 
 # Variables TLP 
 

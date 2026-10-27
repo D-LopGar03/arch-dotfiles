@@ -3,15 +3,7 @@
   ansible.builtin.file:
     path: "/home/{{ entorno_usuario }}/.config/{{ item }}"
     state: absent
-  loop:
-    - hypr
-    - kitty
-    - ranger
-    - rofi
-    - swaync
-    - waybar
-    - wallpapers
-    - scripts
+  loop: "{{ dotfiles_config }}"
   tags: [dotfiles, limpieza]
 
 - name: Descargar wayves desde GitHub
@@ -34,15 +26,8 @@
     owner: "{{ entorno_usuario }}"
     group: "{{ entorno_usuario }}"
     mode: '0700'    
-  loop:
-    - hypr
-    - kitty
-    - ranger
-    - rofi
-    - swaync
-    - waybar
-    - wallpapers
-    - scripts
+  loop: "{{ dotfiles_config }}"
+
   notify: Recargar Hyprland 
   tags: [dotfiles, copia]
 

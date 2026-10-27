@@ -103,6 +103,19 @@
 # Almacenamiento Temporal Segurizado (/tmp y Sockets de Hyprland)
 #======================================================================
 
+- name: Configurar montajes de seguridad en /etc/fstab (/dev/shm y /proc)
+  ansible.builtin.mount:
+    path: "{{ item.path }}"
+    src: "{{ item.src }}"
+    fstype: "{{ item.fstype }}"
+    opts: "{{ item.opts }}"
+    state: present
+  loop:
+    - { path: '/dev/shm', src: 'tmpfs', fstype: 'tmpfs', opts: 'defaults,noexec,nodev,nosuid' }
+    - { path: '/proc', src: 'proc', fstype: 'proc', opts: 'defaults,hidepid=invisible' }
+  tags: [seguridad, almacenamiento]
+
+
 - name: Asegurar /tmp con noexec usando systemd (Evita conflictos en fstab)
   block:
     - name: Crear directorio de configuración para el montaje de /tmp
