@@ -7,26 +7,26 @@
 --###############
 
 hl.monitor({
-	output = "eDP-1",
-	mode = "1920x1080@60",
-	position = "0x0",
-	scale = 1,
+  output = "eDP-1",
+  mode = "1920x1080@60",
+  position = "0x0",
+  scale = 1,
 })
 
 hl.monitor({
-	output = "HDMI-A-1",
-	mode = "1920x1080@60",
-	position = "auto",
-	scale = 1,
+  output = "HDMI-A-1",
+  mode = "1920x1080@60",
+  position = "auto",
+  scale = 1,
 })
 
 --monitor = HDMI-A-1,1440x900@60, auto, auto
 
 hl.monitor({
-	output = "VIRTUAL-1",
-	mode = "1920x1080",
-	position = "auto",
-	scale = 1,
+  output = "VIRTUAL-1",
+  mode = "1920x1080",
+  position = "auto",
+  scale = 1,
 })
 
 -- apps libadwaita gtk4:
@@ -113,60 +113,60 @@ hl.env("SDL_AUDIODRIVER", "pipewire")
 --####################
 
 hl.config({
-	general = {
-		gaps_in = 0,
-		gaps_out = 5,
-		border_size = 1,
-		-- https://wiki.hyprland.org/Configuring/Variables/#variable-types for info about colors
-		-- Set to true enable resizing windows by clicking and dragging on borders and gaps
-		resize_on_border = true,
-		-- Please see https://wiki.hyprland.org/Configuring/Tearing/ before you turn this on
-		allow_tearing = false,
-		layout = "dwindle",
-		col = {
-			active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
-			inactive_border = "rgba(595959aa)",
-		},
-	},
+  general = {
+    gaps_in = 0,
+    gaps_out = 5,
+    border_size = 1,
+    -- https://wiki.hyprland.org/Configuring/Variables/#variable-types for info about colors
+    -- Set to true enable resizing windows by clicking and dragging on borders and gaps
+    resize_on_border = true,
+    -- Please see https://wiki.hyprland.org/Configuring/Tearing/ before you turn this on
+    allow_tearing = false,
+    layout = "dwindle",
+    col = {
+      active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
+      inactive_border = "rgba(595959aa)",
+    },
+  },
 })
 
 hl.config({
-	decoration = {
-		rounding = 0,
-		rounding_power = 0,
-		-- Change transparency of focused and unfocused windows
-		active_opacity = 1.0,
-		inactive_opacity = 0.8,
+  decoration = {
+    rounding = 0,
+    rounding_power = 0,
+    -- Change transparency of focused and unfocused windows
+    active_opacity = 1.0,
+    inactive_opacity = 0.8,
 
-		blur = {
-			enabled = true,
-			size = 9,
-			passes = 2,
-			vibrancy = 9,
-		},
-	},
+    blur = {
+      enabled = true,
+      size = 9,
+      passes = 2,
+      vibrancy = 9,
+    },
+  },
 })
 
 hl.config({
-	animations = {
-		enabled = true,
-	},
+  animations = {
+    enabled = true,
+  },
 })
 
 hl.config({
-	master = {
-		new_status = "master",
-	},
+  master = {
+    new_status = "master",
+  },
 })
 
 hl.config({
-	misc = {
-		force_default_wallpaper = -1,
-		-- Set to 0 or 1 to disable the anime mascot wallpapers
-		disable_hyprland_logo = false,
-		initial_workspace_tracking = false,
-		-- If true disables the random hyprland logo / anime girl background. :(
-	},
+  misc = {
+    force_default_wallpaper = -1,
+    -- Set to 0 or 1 to disable the anime mascot wallpapers
+    disable_hyprland_logo = false,
+    initial_workspace_tracking = false,
+    -- If true disables the random hyprland logo / anime girl background. :(
+  },
 })
 
 --####################################
@@ -174,8 +174,8 @@ hl.config({
 --####################################
 
 hl.window_rule({
-	match = { class = ".*" },
-	suppress_event = "maximize",
+  match = { class = ".*" },
+  suppress_event = "maximize",
 })
 
 --############
@@ -185,19 +185,19 @@ hl.window_rule({
 --############
 
 hl.config({
-	input = {
-		kb_layout = "latam",
-		follow_mouse = 1,
-		sensitivity = 0,
-		touchpad = {
-			natural_scroll = false,
-		},
-	},
+  input = {
+    kb_layout = "latam",
+    follow_mouse = 1,
+    sensitivity = 0,
+    touchpad = {
+      natural_scroll = false,
+    },
+  },
 })
 
 hl.device({
-	name = "epic-mouse-v1",
-	sensitivity = -0.5,
+  name = "epic-mouse-v1",
+  sensitivity = -0.5,
 })
 
 --##################
@@ -239,15 +239,15 @@ hl.bind(mainMod .. " + " .. "K", hl.dsp.exec_cmd(passManager))
 hl.bind(mainMod .. " + " .. "O", hl.dsp.exec_cmd(mdText))
 
 hl.bind(
-	mainMod .. " + " .. "SHIFT" .. " + " .. "L",
-	hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/scripts/./screen_lock.sh")
+  mainMod .. " + " .. "SHIFT" .. " + " .. "L",
+  hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/scripts/./screen_lock.sh")
 )
 
 hl.bind(mainMod .. " + " .. "W", hl.dsp.exec_cmd(sniff))
 
 hl.bind(
-	mainMod .. " + " .. "SHIFT" .. " + " .. "S",
-	hl.dsp.exec_cmd("hyprshot -m region --output-folder ~/Pictures/Screenshots")
+  mainMod .. " + " .. "SHIFT" .. " + " .. "S",
+  hl.dsp.exec_cmd("hyprshot -m region --output-folder ~/Pictures/Screenshots")
 )
 
 -- Mic toggle
@@ -377,27 +377,27 @@ hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl s 5%+"), { locked 
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl s 5%-"), { locked = true })
 
 hl.layer_rule({
-	match = {
-		namespace = "^(waybar)$",
-	},
-	no_anim = true,
+  match = {
+    namespace = "^(waybar)$",
+  },
+  no_anim = true,
 })
 
 -- Autostart
 hl.on("hyprland.start", function()
-	hl.exec_cmd("nm-applet &")
-	hl.exec_cmd("waybar")
-	hl.exec_cmd("awww-daemon --format xrgb")
-	hl.exec_cmd("~/.config/scripts/is-playing.py")
-	hl.exec_cmd("hypridle")
-	hl.exec_cmd("dbus-update-activation-environment --systemd --all QT_QPA_PLATFORM ANDROID_AVD_HOME")
+  hl.exec_cmd("nm-applet &")
+  hl.exec_cmd("waybar")
+  hl.exec_cmd("awww-daemon --format xrgb")
+  hl.exec_cmd("~/.config/scripts/is-playing.py")
+  hl.exec_cmd("hypridle")
+  hl.exec_cmd("dbus-update-activation-environment --systemd --all QT_QPA_PLATFORM ANDROID_AVD_HOME")
 end)
 
 -- Exec (run every reload)
 hl.on("config.reloaded", function()
-	hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
-	hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3")
-	hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
-	hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3")
+  hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
+  hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3")
+  hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
+  hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3")
 end)
 hl.env("XDG_RUNTIME_DIR", "/run/user/1000")
