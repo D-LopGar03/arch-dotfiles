@@ -108,6 +108,7 @@ pacman_packages:
   - network-manager-applet
   - obsidian
   - virtualbox
+  - linux-headers
   - virtualbox-host-dkms
   - waybar
   - remmina
@@ -172,8 +173,6 @@ kernel_storage_whitelist:
   - vboxdrv
   - vboxnetflt
   - vboxnetadp
-  - vboxpci
-  
 
 # Variables TLP 
 
