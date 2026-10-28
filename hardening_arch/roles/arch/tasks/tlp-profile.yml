@@ -1,14 +1,14 @@
 ---
 # =====================================================================
-# Optimización de Batería: TLP + Hyprland en Arch Linux
+# Optimización de Batería Universal: TLP + Systemd Umbrales
 # =====================================================================
 
 - name: Batería | Asegurar que TLP y las utilidades esenciales están instalados
   community.general.pacman:
     name:
       - tlp
-      - tlp-rdw  # Necesario para gestionar radio ya que bloqueas systemd-rfkill
-      - hypridle # Gestor oficial de inactividad para Hyprland
+      - tlp-rdw
+      - hypridle
     state: present
   tags: [battery, power]
 
@@ -19,34 +19,66 @@
     state: stopped
     masked: "{{ item.mask }}"
   loop:
-    - { name: 'power-profiles-daemon.service', mask: true } # Conflicto directo con TLP
-    - { name: 'systemd-rfkill.service', mask: true }        # Evita que systemd pise el control de RF
+    - { name: 'power-profiles-daemon.service', mask: true }
+    - { name: 'systemd-rfkill.service', mask: true }
     - { name: 'systemd-rfkill.socket', mask: true }
   ignore_errors: true
   tags: [battery, power]
 
-- name: Batería | Ajustar la configuración de TLP para el rendimiento de Hyprland
+- name: Batería | Ajustar la configuración de TLP
   ansible.builtin.lineinfile:
     path: /etc/tlp.conf
     regexp: "^#?{{ item.key }}="
     line: "{{ item.key }}=\"{{ item.value }}\""
     create: yes
     mode: '0644'
-  # Combinamos la lista estática con la dinámica procesada como YAML nativo
-  loop: "{{ tlp_generic_settings + (tlp_battery_thresholds | from_yaml) }}"
+  loop: "{{ tlp_generic_settings + (tlp_battery_thresholds | from_yaml | default([], true)) }}"
   register: tlp_config
   tags: [battery, power]
 
 - name: Batería | Iniciar y asegurar el servicio activo de TLP
   ansible.builtin.systemd_service:
-    name: "{{ item }}"
+    name: tlp.service
     enabled: true
     state: started
-  loop:
-    - tlp.service
   tags: [battery, power]
 
 - name: Batería | Aplicar cambios de configuración de TLP inmediatamente
   when: tlp_config.changed
   ansible.builtin.command: tlp start
+  tags: [battery, power]
+
+- name: Batería | Crear servicio universal para forzar límite de carga mediante Sysfs
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/universal-battery-threshold.service
+    mode: '0644'
+    content: |
+      [Unit]
+      Description=Control Universal de Umbral de Bateria (Sysfs)
+      After=multi-user.target tlp.service
+      
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      # Este script busca de forma dinámica cualquier batería (BAT0, BAT1, BATT) y cualquier archivo estándar de control de carga del kernel de Linux
+      ExecStart=/usr/bin/bash -c '\
+        for bat in /sys/class/power_supply/BAT*; do \
+          if [ -d "$bat" ]; then \
+            for file in charge_control_end_threshold charge_start_threshold; do \
+              if [ -f "$bat/$file" ]; then \
+                echo 80 > "$bat/$file"; \
+              fi \
+            done \
+          fi \
+        done'
+      
+      [Install]
+      WantedBy=multi-user.target
+  tags: [battery, power]
+
+- name: Batería | Habilitar e iniciar el servicio universal de umbrales
+  ansible.builtin.systemd_service:
+    name: universal-battery-threshold.service
+    enabled: true
+    state: started
   tags: [battery, power]

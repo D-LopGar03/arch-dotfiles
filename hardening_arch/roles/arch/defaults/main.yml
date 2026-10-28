@@ -183,19 +183,17 @@ tlp_generic_settings:
   - { key: 'CPU_SCALING_GOVERNOR_ON_BAT', value: 'powersave' }
   - { key: 'CPU_ENERGY_PERF_POLICY_ON_BAT', value: 'balance_power' }
 
-# 2. Selección dinámica nativa (Evita strings JSON y mantiene el tipado de lista)
-tlp_battery_thresholds: >-
-  {% if 'ASUS' in (ansible_facts['chassis_vendor'] | default('')) or 'ASUSTeK' in (ansible_facts['chassis_vendor'] | default('')) %}
-    - key: "STOP_CHARGE_THRESH_BAT0"
-      value: "80"
-  {% elif 'Lenovo' in (ansible_facts['chassis_vendor'] | default('')) or 'ThinkPad' in (ansible_facts['chassis_vendor'] | default('')) %}
-    - key: "START_CHARGE_THRESH_BAT0"
-      value: "75"
-    - key: "STOP_CHARGE_THRESH_BAT0"
-      value: "80"
-  {% elif 'Huawei' in (ansible_facts['chassis_vendor'] | default('')) %}
-    - key: "STOP_CHARGE_THRESH_BAT0"
-      value: "80"
+# 2. Umbrales dinámicos para TLP (Lenovo, Huawei nativo, etc.)
+tlp_battery_thresholds: |
+  {% set vendor = (ansible_facts['chassis_vendor'] | default('') | lower) %}
+  {% if 'lenovo' in vendor or 'thinkpad' in vendor %}
+  - key: "START_CHARGE_THRESH_BAT0"
+    value: "75"
+  - key: "STOP_CHARGE_THRESH_BAT0"
+    value: "80"
+  {% elif 'huawei' in vendor or 'asus' in vendor %}
+  - key: "STOP_CHARGE_THRESH_BAT0"
+    value: "80"
   {% else %}
-    []
+  []
   {% endif %}
