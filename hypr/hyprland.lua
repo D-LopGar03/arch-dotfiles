@@ -133,7 +133,7 @@ hl.config({
 hl.config({
   decoration = {
     rounding = 0,
-    rounding_power = 0,
+    rounding_power = 1,
     -- Change transparency of focused and unfocused windows
     active_opacity = 1.0,
     inactive_opacity = 0.8,
@@ -142,7 +142,7 @@ hl.config({
       enabled = true,
       size = 9,
       passes = 2,
-      vibrancy = 9,
+      vibrancy = 0.9,
     },
   },
 })
@@ -392,7 +392,6 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("hypridle")
   hl.exec_cmd("dbus-update-activation-environment --systemd --all QT_QPA_PLATFORM ANDROID_AVD_HOME")
   hl.exec_cmd("udiskie")
-  
 end)
 
 -- Exec (run every reload)
