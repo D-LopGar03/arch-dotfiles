@@ -5,7 +5,7 @@
     state: present
     persistent: present
   loop: "{{ kernel_storage_whitelist }}"
-  tags: [ 'hardening', 'kernel' ]
+  tags: [kernel]
 
 - name: Kernel | Aplicar parámetros sysctl de hardening
   ansible.posix.sysctl:
@@ -36,4 +36,4 @@
       blacklist {{ m }}
       install {{ m }} /bin/false
       {% endfor %}
-  tags: [modulos]
+  tags: [kernel]
