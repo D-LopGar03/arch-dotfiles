@@ -173,7 +173,7 @@
     },
     "memory": {
         "interval": 5,
-        "format": " {used} GiB",
+        "format": " {used:.2f} GiB",
         "max-length": 2
     },
     "cpu": {
